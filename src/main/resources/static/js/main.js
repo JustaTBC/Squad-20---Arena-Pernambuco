@@ -23,15 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(raf);
     }
 
-    // === GSAP Page Fade-In ===
-    if (typeof gsap !== 'undefined') {
-        gsap.from('main', {
-            opacity: 0,
-            y: 20,
-            duration: 0.6,
-            ease: 'power2.out'
-        });
-    }
 
     // === Header Scroll Effect ===
     const header = document.querySelector('.site-header');
@@ -101,17 +92,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
     // === GSAP Stagger animation for cards ===
     if (typeof gsap !== 'undefined') {
-        const cards = document.querySelectorAll('.evento-card, .card, section.card');
+        const cards = document.querySelectorAll('.evento-card');
         if (cards.length > 0) {
             gsap.from(cards, {
                 opacity: 0,
                 y: 30,
-                duration: 0.5,
-                stagger: 0.1,
+                duration: 0.6,
+                stagger: 0.08,
                 ease: 'power2.out',
-                delay: 0.2
+                clearProps: 'opacity,transform'
             });
         }
     }

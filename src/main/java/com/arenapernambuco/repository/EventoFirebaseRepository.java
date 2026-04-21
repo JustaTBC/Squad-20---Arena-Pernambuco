@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -37,16 +39,20 @@ public class EventoFirebaseRepository implements EventoRepository {
     public List<Evento> buscarTodos() {
         DataSnapshot snapshot = lerSnapshot(eventosRef);
         if (snapshot == null || !snapshot.exists()) {
+            log.warn("Firebase: nó 'eventos' vazio ou não encontrado");
             return Collections.emptyList();
         }
+        log.info("Firebase: {} nós encontrados em 'eventos'", snapshot.getChildrenCount());
         List<Evento> lista = new ArrayList<>();
         for (DataSnapshot filho : snapshot.getChildren()) {
             try {
                 lista.add(snapshotParaEvento(filho));
             } catch (Exception e) {
-                log.warn("Erro ao converter evento id={}: {}", filho.getKey(), e.getMessage());
+                log.warn("Erro ao converter evento id={}: {} — dados brutos: {}",
+                        filho.getKey(), e.getMessage(), filho.getValue());
             }
         }
+        log.info("Firebase: {} evento(s) convertidos com sucesso", lista.size());
         return lista;
     }
 
@@ -138,6 +144,19 @@ public class EventoFirebaseRepository implements EventoRepository {
         return resultado.get();
     }
 
+    private static final DateTimeFormatter SERIALIZAR_FORMATO =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    private static final List<DateTimeFormatter> DATA_HORA_FORMATOS = List.of(
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"),
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"),
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
+    );
+
     @SuppressWarnings("unchecked")
     private Evento snapshotParaEvento(DataSnapshot snapshot) {
         String id = snapshot.getKey();
@@ -147,26 +166,51 @@ public class EventoFirebaseRepository implements EventoRepository {
         if (valor instanceof Map) {
             dados = (Map<String, Object>) valor;
         } else {
-            throw new IllegalStateException("Formato inválido para evento id=" + id);
+            throw new IllegalStateException("Formato inválido para evento id=" + id + " valor=" + valor);
         }
 
-        String titulo = (String) dados.get("titulo");
-        LocalDateTime dataHora = LocalDateTime.parse((String) dados.get("dataHora"));
-        String categoria = (String) dados.get("categoria");
-        String codigoVerificacao = (String) dados.get("codigoVerificacao");
-        String descricaoCurta = (String) dados.get("descricaoCurta");
-        String descricaoCompleta = (String) dados.get("descricaoCompleta");
-        String imagemUrl = (String) dados.get("imagemUrl");
-        boolean ativo = Boolean.TRUE.equals(dados.get("ativo"));
+        log.debug("Firebase evento id={} campos={}", id, dados.keySet());
+
+        String titulo = Objects.toString(dados.get("titulo"), "Sem título");
+        String dataHoraStr = Objects.toString(dados.get("dataHora"), null);
+        LocalDateTime dataHora = parsarDataHora(id, dataHoraStr);
+        String categoria = Objects.toString(dados.get("categoria"), "Geral");
+        String codigoVerificacao = Objects.toString(dados.get("codigoVerificacao"), id);
+        String descricaoCurta = Objects.toString(dados.get("descricaoCurta"), "");
+        String descricaoCompleta = Objects.toString(dados.get("descricaoCompleta"), "");
+        String imagemUrl = Objects.toString(dados.get("imagemUrl"), "");
+        boolean ativo = parsarBoolean(dados.get("ativo"), true);
 
         return new Evento(id, titulo, dataHora, categoria, codigoVerificacao,
                 descricaoCurta, descricaoCompleta, imagemUrl, ativo);
     }
 
+    private LocalDateTime parsarDataHora(String id, String valor) {
+        if (valor == null || valor.isBlank()) {
+            log.warn("Evento id={} sem campo 'dataHora', usando agora como fallback", id);
+            return LocalDateTime.now();
+        }
+        for (DateTimeFormatter fmt : DATA_HORA_FORMATOS) {
+            try {
+                return LocalDateTime.parse(valor, fmt);
+            } catch (DateTimeParseException ignored) {
+            }
+        }
+        log.warn("Evento id={} — não foi possível interpretar dataHora='{}', usando agora", id, valor);
+        return LocalDateTime.now();
+    }
+
+    private boolean parsarBoolean(Object valor, boolean defaultValue) {
+        if (valor == null) return defaultValue;
+        if (valor instanceof Boolean b) return b;
+        if (valor instanceof Number n) return n.intValue() != 0;
+        return Boolean.parseBoolean(valor.toString());
+    }
+
     private Map<String, Object> eventoParaMapa(Evento evento) {
         Map<String, Object> mapa = new LinkedHashMap<>();
         mapa.put("titulo", evento.titulo());
-        mapa.put("dataHora", evento.dataHora().toString());
+        mapa.put("dataHora", evento.dataHora().format(SERIALIZAR_FORMATO));
         mapa.put("categoria", evento.categoria());
         mapa.put("codigoVerificacao", evento.codigoVerificacao());
         mapa.put("descricaoCurta", evento.descricaoCurta());

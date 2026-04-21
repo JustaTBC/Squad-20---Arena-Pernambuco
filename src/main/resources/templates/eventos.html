@@ -38,9 +38,9 @@
 <div th:replace="~{fragments :: header}"></div>
 
 <main>
-  <h1 class="page-title" data-aos="fade-up">Eventos</h1>
+  <h1 class="page-title">Eventos</h1>
 
-  <form class="filtros" method="get" th:action="@{/eventos}" data-aos="fade-up" data-aos-delay="100">
+  <form class="filtros" method="get" th:action="@{/eventos}">
     <select name="categoria">
       <option value="">Todas as categorias</option>
       <option th:each="cat : ${categorias}"
@@ -61,9 +61,7 @@
 
   <div class="eventos-grid" th:if="${not #lists.isEmpty(eventos)}">
     <article class="evento-card"
-             th:each="e, iterStat : ${eventos}"
-             data-aos="fade-up"
-             th:attr="data-aos-delay=${iterStat.index * 100}">
+             th:each="e, iterStat : ${eventos}">
       <div class="evento-card__image"
            th:style="'background-image: url(' + ${e.imagemUrl} + ')'">
       </div>
