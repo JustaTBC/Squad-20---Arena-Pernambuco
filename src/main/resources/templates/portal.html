@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Arena Pernambuco — Portal</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <style>
+    #tsparticles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .portal-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      line-height: 0.95;
+      margin-bottom: 1rem;
+    }
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+    .hero-subtitle .typed-cursor {
+      color: var(--accent);
+    }
+    #typed-output {
+      color: var(--accent);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<div id="tsparticles"></div>
+
+<main class="portal-content">
+  <section class="hero">
+    <h1 class="hero-title">Arena <span class="text-accent">Pernambuco</span></h1>
+    <p class="hero-subtitle">
+      O palco de <span id="typed-output"></span>
+    </p>
+
+    <div class="stats" data-aos="fade-up" data-aos-delay="200">
+      <div class="stat">
+        <div class="stat__number">46000</div>
+        <div class="stat__label">Capacidade</div>
+      </div>
+      <div class="stat">
+        <div class="stat__number">50</div>
+        <div class="stat__label">Eventos/Ano</div>
+      </div>
+      <div class="stat">
+        <div class="stat__number">5</div>
+        <div class="stat__label">Categorias</div>
+      </div>
+    </div>
+
+    <div class="role-cards">
+      <a th:href="@{/eventos}" class="role-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="role-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <h3 class="role-card__title">Visitante</h3>
+        <p class="role-card__desc">Explorar sem login. Navegue pela programação de eventos e descubra o que acontece na Arena.</p>
+      </a>
+
+      <a th:href="@{/login}" class="role-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="role-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <h3 class="role-card__title">Participante</h3>
+        <p class="role-card__desc">Acessar minha conta. Gerencie seus ingressos e acompanhe eventos de seu interesse.</p>
+      </a>
+
+      <a th:href="@{/login}" class="role-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="role-card__icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <h3 class="role-card__title">Administrador</h3>
+        <p class="role-card__desc">Painel administrativo. Gerencie eventos, visualize estatísticas e controle o sistema.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+  tsParticles.load("tsparticles", {
+    particles: {
+      number: { value: 60, density: { enable: true, area: 900 } },
+      color: { value: "#FF6B35" },
+      shape: { type: "circle" },
+      opacity: { value: 0.3, random: true },
+      size: { value: 2, random: true },
+      links: {
+        enable: true,
+        distance: 150,
+        color: "#FF6B35",
+        opacity: 0.15,
+        width: 1
+      },
+      move: {
+        enable: true,
+        speed: 0.8,
+        direction: "none",
+        outModes: { default: "bounce" }
+      }
+    },
+    interactivity: {
+      events: {
+        onHover: { enable: true, mode: "grab" },
+        resize: true
+      },
+      modes: {
+        grab: { distance: 140, links: { opacity: 0.4 } }
+      }
+    },
+    detectRetina: true
+  });
+
+  new Typed('#typed-output', {
+    strings: ["Esportes", "Shows", "Cultura", "Negócios", "Teatro"],
+    typeSpeed: 60,
+    backSpeed: 40,
+    backDelay: 2000,
+    loop: true
+  });
+</script>
+</body>
+</html>

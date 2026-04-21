@@ -8,6 +8,9 @@ public record Evento(
         LocalDateTime dataHora,
         String categoria,
         String codigoVerificacao,
-        String descricaoCurta
+        String descricaoCurta,
+        String descricaoCompleta,
+        String imagemUrl,
+        boolean ativo
 ) {
 }

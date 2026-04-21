@@ -1,19 +1,36 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <header class="site-header" th:fragment="header">
   <div class="site-header__inner">
-    <a href="/" class="logo logo--link">Arena <span>Pernambuco</span></a>
+    <a href="/" class="logo">Arena <span>Pernambuco</span></a>
+    <button class="menu-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
     <nav class="nav">
-      <a href="/">Início</a>
-      <a href="/eventos">Eventos</a>
-      <a href="/verificar">Verificar evento</a>
+      <a th:href="@{/}">Início</a>
+      <a th:href="@{/eventos}">Eventos</a>
+      <a th:href="@{/verificar}" sec:authorize="hasAnyRole('PARTICIPANTE','ADMIN')">Verificar</a>
+      <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')">Admin</a>
+      <span class="nav-user" sec:authorize="isAuthenticated()">
+        <span class="nav-user__name" sec:authentication="name">user</span>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn btn--ghost btn--sm">Sair</button>
+        </form>
+      </span>
+      <a th:href="@{/login}" class="btn btn--primary nav-cta" sec:authorize="isAnonymous()">Entrar</a>
+      <a th:href="@{/eventos}" class="btn btn--primary nav-cta" sec:authorize="isAuthenticated()">Ver Eventos</a>
     </nav>
   </div>
 </header>
 
 <footer class="site-footer" th:fragment="footer">
-  <p>Arena Pernambuco — São Lourenço da Mata, PE. Site demonstrativo para fins acadêmicos.</p>
+  <div class="footer-inner">
+    <p class="footer-brand">Arena <span class="text-accent">Pernambuco</span></p>
+    <p class="footer-text">São Lourenço da Mata, PE — Site demonstrativo para fins acadêmicos.</p>
+    <p class="footer-copy">&copy; 2026 Squad 20. Todos os direitos reservados.</p>
+  </div>
 </footer>
 </body>
 </html>
