@@ -16,35 +16,74 @@ Tema: Governo / Setor Público, Cidades Inteligentes, Inovação / Tecnologia.
 - **Template Engine:** Thymeleaf
 - **Build:** Maven
 - **Servidor:** Porta 8080
-- **Banco de dados:** ainda NÃO implementado (dados em memória/List)
+- **Banco de dados:** Firebase Realtime Database (implementado — perfil `firebase`)
+- **Segurança:** Spring Security com 3 papéis: anônimo, PARTICIPANTE, ADMIN
 
 ## Estrutura do Projeto
 
 ```
 src/main/java/com/arenapernambuco/
-├── ArenaPernambucoApplication.java   # Entry point Spring Boot
+├── ArenaPernambucoApplication.java
+├── config/
+│   ├── SecurityConfig.java           # Spring Security — roles, rotas protegidas, login customizado
+│   ├── FirebaseConfig.java           # Inicializa FirebaseApp via classpath, expõe DatabaseReference bean
+│   └── FirebaseSeeder.java           # Seed automático: popula Firebase se estiver vazio
+├── controller/
+│   ├── PortalController.java         # GET /  →  portal.html
+│   ├── EventoController.java         # GET /eventos, /eventos/{id}
+│   └── VerificacaoController.java    # GET/POST /verificar
+├── dto/
+│   ├── EventoDTO.java                # Projeção para views (dataFormatada, badgeCor)
+│   └── EventoFiltroDTO.java          # Filtros: categoria, data, ordem
+├── exception/
+│   ├── EventoNaoEncontradoException.java
+│   └── GlobalExceptionHandler.java   # @ControllerAdvice → erro-404/500
 ├── model/
-│   └── Evento.java                   # Record com: id, titulo, dataHora, categoria, codigoVerificacao, descricaoCurta
-├── service/
-│   └── EventoService.java            # Lógica de negócio; dados mockados em List.of(...)
-└── web/
-    └── SiteController.java           # Controller MVC: /, /eventos, /verificar (GET e POST)
+│   └── Evento.java                   # Record com 9 campos
+├── repository/
+│   ├── EventoRepository.java         # Interface
+│   ├── EventoMemoryRepository.java   # Implementação em memória (fallback / testes)
+│   └── EventoFirebaseRepository.java # Implementação Firebase (@Primary, @Profile("firebase"))
+└── service/
+    └── EventoService.java            # Converte Evento → EventoDTO, filtros, verificação
 
 src/main/resources/
-├── application.properties
-├── static/css/style.css
+├── application.properties            # spring.profiles.active=firebase
+├── projeto-arena-pernambuco-firebase-adminsdk-fbsvc-6910d1e348.json  # GITIGNORED
+├── static/
+│   ├── css/style.css                 # Design system dark theme completo (1342 linhas)
+│   └── js/main.js                    # AOS, Lenis, GSAP, header scroll, menu mobile
 └── templates/
-    ├── index.html       # Página inicial (home)
-    ├── eventos.html     # Listagem de eventos com filtro por categoria
-    ├── verificar.html   # Verificação de código de evento
-    └── fragments.html   # Header e footer reutilizáveis
+    ├── fragments.html   # Header/footer com sec:authorize
+    ├── portal.html      # Página inicial com tsParticles + Typed.js + role cards
+    ├── login.html       # Formulário Spring Security + hints de credenciais
+    ├── eventos.html     # Grid com filtros
+    ├── evento-detalhe.html
+    ├── verificar.html
+    ├── erro-404.html
+    ├── erro-403.html
+    └── erro-500.html
 ```
+
+## Perfis Spring
+
+| Perfil | Repositório ativo | Uso |
+|--------|------------------|-----|
+| `firebase` (padrão) | `EventoFirebaseRepository` | Produção / desenvolvimento |
+| qualquer outro | `EventoMemoryRepository` | Testes (`@ActiveProfiles("memory")`) |
+
+## Credenciais de demonstração
+
+| Papel | E-mail | Senha |
+|-------|--------|-------|
+| PARTICIPANTE | participante@arena.com | senha123 |
+| ADMIN | admin@arena.com | admin123 |
 
 ## Usuários do Sistema
 
-- **Compradores de ingressos** — cidadãos que querem participar de eventos
-- **Cidadãos interessados** — querem visualizar programação
-- **Administradores** — gerenciam eventos e visualizam estatísticas
+- **Visitantes** — visualizam eventos sem login
+- **Participantes** — verificam código de evento (`/verificar`)
+- **Administradores** — acesso total (`/admin`)
 
 ## Histórias de Usuário (Status)
 
@@ -52,24 +91,28 @@ Documento: https://docs.google.com/document/d/1Ip4to0OEqmnKjZvN2xUTTQf7qFtkw_aET
 
 | # | História | Status |
 |---|----------|--------|
-| H1 | Visualizar próximos eventos com filtro/ordenação | Parcialmente implementada |
-| H2 | Verificar código de evento | Parcialmente implementada |
-| H3 | (Ver documento) | Parcialmente implementada |
+| H1 | Visualizar próximos eventos com filtro/ordenação | Implementada |
+| H2 | Verificar código de evento | Implementada |
+| H3 | Página de detalhe do evento | Implementada |
 | H4+ | Dashboard admin com estatísticas | Não implementada |
 | H5+ | Cadastro de eventos por administrador | Não implementada |
 | H6+ | Agendamento de visitas / participação em eventos | Não implementada |
 
 ## MVP Funcionalidades
 
-- [x] Visualização de eventos com filtro por categoria
-- [x] Verificação de código de evento
-- [ ] Filtros/ordenação avançados
+- [x] Portal de entrada com seleção de papel (visitante / participante / admin)
+- [x] Visualização de eventos com filtro por categoria, data e ordenação
+- [x] Página de detalhe do evento
+- [x] Verificação de código de evento (`/verificar`)
+- [x] Spring Security com 3 papéis e login customizado
+- [x] Firebase Realtime Database como banco de dados real
+- [x] Design dark theme responsivo (e-sports/arena)
+- [x] Animações: AOS, GSAP, tsParticles, Typed.js, Lenis
 - [ ] Dashboard administrativo com estatísticas (médias, tendência central, dispersão)
 - [ ] Cadastro de novos eventos por administrador
 - [ ] Agendamento de visitas / participação em eventos
 - [ ] Sugestão de novos eventos por cidadãos
 - [ ] Compra de ingressos (simulada)
-- [ ] Banco de dados real (substituir mock em memória)
 
 ## Fora do Escopo
 
@@ -80,6 +123,7 @@ Documento: https://docs.google.com/document/d/1Ip4to0OEqmnKjZvN2xUTTQf7qFtkw_aET
 ## Convenções do Código
 
 - Usar português para nomes de domínio (Evento, EventoService, etc.)
-- Seguir padrão MVC do Spring Boot
-- Testes com JUnit (pasta src/test/)
+- Seguir padrão MVC do Spring Boot com Repository Pattern e DTOs
+- Testes com JUnit 5 + MockMvc (pasta src/test/) — 47 testes passando
 - Commits em PORTUGUÊS
+- NUNCA commitar `*.json` de credenciais Firebase (já no .gitignore)
