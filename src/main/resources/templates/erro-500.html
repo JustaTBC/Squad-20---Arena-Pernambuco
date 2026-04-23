@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>500 — Erro interno</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main>
+  <div class="error-page">
+    <h1>500</h1>
+    <p>Algo deu errado</p>
+    <p th:if="${mensagem}" th:text="${mensagem}" class="text-muted"></p>
+    <div style="margin-top: 1rem;">
+      <a th:href="@{/}" class="btn btn--primary">Voltar ao início</a>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

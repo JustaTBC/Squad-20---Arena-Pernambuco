@@ -1,0 +1,7 @@
+com\arenapernambuco\service\EventoServiceTest.class
+com\arenapernambuco\config\SecurityConfigTest.class
+com\arenapernambuco\ArenaPernambucoApplicationTests.class
+com\arenapernambuco\controller\EventoControllerTest.class
+com\arenapernambuco\repository\EventoMemoryRepositoryTest.class
+com\arenapernambuco\controller\PortalControllerTest.class
+com\arenapernambuco\controller\VerificacaoControllerTest.class

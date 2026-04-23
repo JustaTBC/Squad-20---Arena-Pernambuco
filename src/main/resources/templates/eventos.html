@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Eventos — Arena Pernambuco</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <style>
+    .eventos-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .eventos-empty svg {
+      width: 64px;
+      height: 64px;
+      color: var(--text-muted);
+      opacity: 0.4;
+      margin-bottom: 1.5rem;
+    }
+    .eventos-empty h3 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+    .eventos-empty p {
+      margin-bottom: 1.5rem;
+    }
+    .evento-card__image {
+      width: 100%;
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--bg-card-hover);
+    }
+  </style>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main>
+  <h1 class="page-title">Eventos</h1>
+
+  <form class="filtros" method="get" th:action="@{/eventos}">
+    <select name="categoria">
+      <option value="">Todas as categorias</option>
+      <option th:each="cat : ${categorias}"
+              th:value="${cat}"
+              th:text="${cat}"
+              th:selected="${categoriaAtiva == cat}">Categoria</option>
+    </select>
+
+    <input type="date" name="data" th:value="${dataAtiva}" placeholder="Data"/>
+
+    <select name="ordem">
+      <option value="proximos" th:selected="${ordemAtiva == 'proximos'}">Mais próximos</option>
+      <option value="recentes" th:selected="${ordemAtiva == 'recentes'}">Mais recentes</option>
+    </select>
+
+    <button type="submit" class="btn btn--primary">Filtrar</button>
+  </form>
+
+  <div class="eventos-grid" th:if="${not #lists.isEmpty(eventos)}">
+    <article class="evento-card"
+             th:each="e, iterStat : ${eventos}">
+      <div class="evento-card__image"
+           th:style="'background-image: url(' + ${e.imagemUrl} + ')'">
+      </div>
+      <div class="evento-card__body">
+        <div class="evento-card__meta">
+          <span class="badge" th:text="${e.categoria}" th:style="'background-color:' + ${e.badgeCor} + '1a; color:' + ${e.badgeCor}">Categoria</span>
+          <span th:text="${e.dataFormatada}">01/01/2026</span>
+        </div>
+        <h3 class="evento-card__title" th:text="${e.titulo}">Título do evento</h3>
+        <p class="evento-card__desc" th:text="${e.descricaoCurta}">Descrição breve do evento.</p>
+      </div>
+      <div class="evento-card__footer">
+        <a th:href="@{/eventos/{id}(id=${e.id})}" class="btn btn--ghost btn--sm">Ver detalhes &rarr;</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="eventos-empty" th:if="${#lists.isEmpty(eventos)}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+      <line x1="16" y1="2" x2="16" y2="6"/>
+      <line x1="8" y1="2" x2="8" y2="6"/>
+      <line x1="3" y1="10" x2="21" y2="10"/>
+    </svg>
+    <h3>Nenhum evento encontrado</h3>
+    <p class="text-muted">Não há eventos que correspondam aos filtros selecionados.</p>
+    <a th:href="@{/eventos}" class="btn btn--ghost">Limpar filtros</a>
+  </div>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

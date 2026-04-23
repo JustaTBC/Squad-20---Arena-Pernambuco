@@ -1,0 +1,19 @@
+git restore CLAUDE.mdtarget/
+!.mvn/wrapper/maven-wrapper.jar
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Firebase
+*-credentials.json
+firebase-adminsdk*.json
+*adminsdk*.json
+serviceAccountKey.json
+
+# Environment
+*.env
+.env.*
+application-local.properties

@@ -1,0 +1,17 @@
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\ArenaPernambucoApplication.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\config\FirebaseConfig.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\config\FirebaseSeeder.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\config\SecurityConfig.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\controller\DebugController.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\controller\EventoController.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\controller\PortalController.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\controller\VerificacaoController.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\dto\EventoDTO.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\dto\EventoFiltroDTO.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\exception\EventoNaoEncontradoException.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\exception\GlobalExceptionHandler.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\model\Evento.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\repository\EventoFirebaseRepository.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\repository\EventoMemoryRepository.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\repository\EventoRepository.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\main\java\com\arenapernambuco\service\EventoService.java

@@ -52,3 +52,17 @@ Vídeo demonstrando a navegação pelo protótipo e explicando as funcionalidade
 https://youtu.be/yFBPZNLm1R8
 
 ---
+
+# 📦 Entrega 2
+
+---
+
+## 🎥 Screencast da aplicação
+
+Vídeo demonstrando a navegação pelo site e explicando as histórias implementadas.
+
+▶️ **Assistir no YouTube**
+
+https://youtu.be/Yfrs0JDwcEY
+
+---
