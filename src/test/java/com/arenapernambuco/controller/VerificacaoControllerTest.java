@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("memory")
 class VerificacaoControllerTest {
 
     @Autowired
@@ -36,6 +39,20 @@ class VerificacaoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("ok", true))
                 .andExpect(model().attributeExists("evento"));
+    }
+
+    @Test
+    @WithMockUser(roles = "PARTICIPANTE")
+    void verificar_codigoInativo_retornaAvisoDeEventoInativo() throws Exception {
+        mockMvc.perform(post("/verificar")
+                        .param("codigo", "AP-CUL-003")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("ok", false))
+                .andExpect(model().attribute("inativo", true))
+                .andExpect(model().attributeExists("evento"))
+                .andExpect(content().string(containsString("Evento inativo")))
+                .andExpect(content().string(containsString("Busque contato com o suporte")));
     }
 
     @Test

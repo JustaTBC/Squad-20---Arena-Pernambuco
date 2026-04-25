@@ -106,9 +106,23 @@ public class EventoFirebaseRepository implements EventoRepository {
         return stream.sorted(comparator).collect(Collectors.toList());
     }
 
-    public void salvar(Evento evento) {
+    @Override
+    public Evento salvar(Evento evento) {
         Map<String, Object> dados = eventoParaMapa(evento);
         eventosRef.child(evento.id()).setValueAsync(dados);
+        return evento;
+    }
+
+    @Override
+    public Evento atualizar(String id, Evento evento) {
+        Map<String, Object> dados = eventoParaMapa(evento);
+        eventosRef.child(id).setValueAsync(dados);
+        return evento;
+    }
+
+    @Override
+    public void remover(String id) {
+        eventosRef.child(id).removeValueAsync();
     }
 
     // -------------------------------------------------------------------------

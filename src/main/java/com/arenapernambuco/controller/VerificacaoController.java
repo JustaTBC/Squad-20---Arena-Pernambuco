@@ -38,8 +38,14 @@ public class VerificacaoController {
 
         Optional<EventoDTO> encontrado = eventoService.verificarPorCodigo(codigoLimpo);
         if (encontrado.isPresent()) {
-            model.addAttribute("ok", true);
-            model.addAttribute("evento", encontrado.get());
+            EventoDTO evento = encontrado.get();
+            model.addAttribute("evento", evento);
+            if (evento.ativo()) {
+                model.addAttribute("ok", true);
+            } else {
+                model.addAttribute("ok", false);
+                model.addAttribute("inativo", true);
+            }
         } else {
             model.addAttribute("ok", false);
             model.addAttribute("codigoInformado", codigoLimpo);

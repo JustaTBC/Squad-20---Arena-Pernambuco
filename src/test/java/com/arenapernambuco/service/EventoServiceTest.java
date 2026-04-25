@@ -2,6 +2,7 @@ package com.arenapernambuco.service;
 
 import com.arenapernambuco.dto.EventoDTO;
 import com.arenapernambuco.dto.EventoFiltroDTO;
+import com.arenapernambuco.dto.EventoFormDTO;
 import com.arenapernambuco.exception.EventoNaoEncontradoException;
 import com.arenapernambuco.repository.EventoMemoryRepository;
 import com.arenapernambuco.repository.EventoRepository;
@@ -61,6 +62,12 @@ class EventoServiceTest {
         for (EventoDTO dto : resultado) {
             assertEquals("Futebol", dto.categoria());
         }
+    }
+
+    @Test
+    void categoriasValidas_mantemAcentuacaoEmPortugues() {
+        assertTrue(EventoService.CATEGORIAS_VALIDAS.contains("Música"));
+        assertFalse(EventoService.CATEGORIAS_VALIDAS.contains("MÃºsica"));
     }
 
     @Test
@@ -125,5 +132,84 @@ class EventoServiceTest {
                 dto.dataFormatada().matches("\\d{2}/\\d{2}/\\d{4} às \\d{2}h\\d{2}"),
                 "dataFormatada deve seguir o formato 'dd/MM/yyyy às HHhMM', mas foi: " + dto.dataFormatada()
         );
+    }
+
+    @Test
+    void listarTodos_incluiEventosInativos() {
+        List<EventoDTO> todos = service.listarTodos();
+        // EventoMemoryRepository has 10 events, one inactive (id=10)
+        assertEquals(10, todos.size());
+    }
+
+    @Test
+    void cadastrar_comFormValido_retornaDTOComIdGerado() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Show de Teste");
+        form.setCategoria("Música");
+        form.setDataHora("2026-12-01T20:00");
+        form.setDescricaoCurta("Resumo");
+        form.setDescricaoCompleta("Completo");
+        form.setImagemUrl("");
+        form.setCodigoVerificacao("TST001");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertNotNull(dto.id());
+        assertEquals("Show de Teste", dto.titulo());
+        assertEquals("Música", dto.categoria());
+        assertTrue(dto.ativo());
+    }
+
+    @Test
+    void cadastrar_semCodigoVerificacao_geraCodigoAutomatico() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Show Sem Código");
+        form.setCategoria("Teatro");
+        form.setDataHora("2026-12-01T20:00");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertNotNull(dto.id());
+        // verify the event was saved and can be retrieved
+        EventoDTO recuperado = service.buscarDetalhePorId(dto.id());
+        assertEquals("Show Sem Código", recuperado.titulo());
+    }
+
+    @Test
+    void atualizar_comIdInexistente_lancaEventoNaoEncontradoException() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Qualquer");
+        form.setCategoria("Cultural");
+        form.setDataHora("2026-12-01T20:00");
+
+        assertThrows(EventoNaoEncontradoException.class, () -> service.atualizar("999", form));
+    }
+
+    @Test
+    void remover_comIdExistente_removeEvento() {
+        service.remover("3");
+        assertThrows(EventoNaoEncontradoException.class, () -> service.buscarDetalhePorId("3"));
+    }
+
+    @Test
+    void remover_comIdInexistente_lancaEventoNaoEncontradoException() {
+        assertThrows(EventoNaoEncontradoException.class, () -> service.remover("999"));
+    }
+
+    @Test
+    void toFormDTO_mapeiaEventoCorretamente() {
+        EventoFormDTO form = service.toFormDTO("1");
+
+        assertEquals("Campeonato Pernambucano — Final", form.getTitulo());
+        assertEquals("Futebol", form.getCategoria());
+        assertEquals("AP-FUT-001", form.getCodigoVerificacao());
+        assertTrue(form.isAtivo());
+    }
+
+    @Test
+    void toFormDTO_comIdInexistente_lancaEventoNaoEncontradoException() {
+        assertThrows(EventoNaoEncontradoException.class, () -> service.toFormDTO("999"));
     }
 }

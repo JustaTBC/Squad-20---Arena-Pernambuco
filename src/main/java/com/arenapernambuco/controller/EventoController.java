@@ -17,9 +17,6 @@ import java.util.Set;
 @Controller
 public class EventoController {
 
-    private static final Set<String> CATEGORIAS_VALIDAS =
-            Set.of("Futebol", "Música", "Corporativo", "Cultural", "Teatro");
-
     private static final Set<String> ORDENS_VALIDAS = Set.of("proximos", "recentes");
 
     private final EventoService eventoService;
@@ -35,7 +32,7 @@ public class EventoController {
             @RequestParam(required = false) String ordem,
             Model model) {
 
-        String categoriaSanitizada = (categoria != null && CATEGORIAS_VALIDAS.contains(categoria)) ? categoria : null;
+        String categoriaSanitizada = (categoria != null && EventoService.CATEGORIAS_VALIDAS.contains(categoria)) ? categoria : null;
         String ordemSanitizada = (ordem != null && ORDENS_VALIDAS.contains(ordem)) ? ordem : "proximos";
         LocalDate dataParsed = parseData(data);
 
@@ -46,7 +43,7 @@ public class EventoController {
         model.addAttribute("categoriaAtiva", categoriaSanitizada);
         model.addAttribute("dataAtiva", dataParsed != null ? dataParsed.toString() : null);
         model.addAttribute("ordemAtiva", ordemSanitizada);
-        model.addAttribute("categorias", CATEGORIAS_VALIDAS);
+        model.addAttribute("categorias", EventoService.CATEGORIAS_VALIDAS);
         return "eventos";
     }
 

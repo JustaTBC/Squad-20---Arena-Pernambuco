@@ -1,10 +1,13 @@
 package com.arenapernambuco.repository;
 
 import com.arenapernambuco.dto.EventoFiltroDTO;
+import com.arenapernambuco.exception.EventoNaoEncontradoException;
 import com.arenapernambuco.model.Evento;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +16,7 @@ import java.util.stream.Collectors;
 @Repository
 public class EventoMemoryRepository implements EventoRepository {
 
-    private final List<Evento> eventos = List.of(
+    private final List<Evento> eventos = Collections.synchronizedList(new ArrayList<>(List.of(
             new Evento("1", "Campeonato Pernambucano — Final",
                     LocalDateTime.of(2026, 5, 10, 16, 0),
                     "Futebol", "AP-FUT-001",
@@ -83,11 +86,11 @@ public class EventoMemoryRepository implements EventoRepository {
                     "Evento inativo para testes.",
                     "Este evento foi marcado como inativo e não deve aparecer nas listagens públicas.",
                     "https://picsum.photos/seed/cul3/800/400", false)
-    );
+    )));
 
     @Override
     public List<Evento> buscarTodos() {
-        return eventos;
+        return Collections.unmodifiableList(eventos);
     }
 
     @Override
@@ -132,5 +135,35 @@ public class EventoMemoryRepository implements EventoRepository {
         }
 
         return stream.sorted(comparator).collect(Collectors.toList());
+    }
+
+    @Override
+    public Evento salvar(Evento evento) {
+        if (buscarPorId(evento.id()).isPresent()) {
+            throw new IllegalArgumentException("Evento com id '" + evento.id() + "' já existe");
+        }
+        eventos.add(evento);
+        return evento;
+    }
+
+    @Override
+    public Evento atualizar(String id, Evento evento) {
+        synchronized (eventos) {
+            for (int i = 0; i < eventos.size(); i++) {
+                if (eventos.get(i).id().equals(id)) {
+                    eventos.set(i, evento);
+                    return evento;
+                }
+            }
+        }
+        throw new EventoNaoEncontradoException(id);
+    }
+
+    @Override
+    public void remover(String id) {
+        boolean removido = eventos.removeIf(e -> e.id().equals(id));
+        if (!removido) {
+            throw new EventoNaoEncontradoException(id);
+        }
     }
 }

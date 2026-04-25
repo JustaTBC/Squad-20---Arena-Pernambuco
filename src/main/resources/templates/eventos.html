@@ -49,7 +49,7 @@
               th:selected="${categoriaAtiva == cat}">Categoria</option>
     </select>
 
-    <input type="date" name="data" th:value="${dataAtiva}" placeholder="Data"/>
+    <input type="date" name="data" th:value="${dataAtiva}" placeholder="Data" data-arena-calendar/>
 
     <select name="ordem">
       <option value="proximos" th:selected="${ordemAtiva == 'proximos'}">Mais próximos</option>

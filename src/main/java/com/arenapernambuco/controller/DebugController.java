@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Profile("firebase")
+@Profile("debug")
 public class DebugController {
 
     private final EventoFirebaseRepository repository;

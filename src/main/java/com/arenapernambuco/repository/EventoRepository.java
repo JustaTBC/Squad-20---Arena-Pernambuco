@@ -12,4 +12,8 @@ public interface EventoRepository {
     Optional<Evento> buscarPorId(String id);
     Optional<Evento> buscarPorCodigo(String codigo);
     List<Evento> filtrar(EventoFiltroDTO filtro);
+
+    Evento salvar(Evento evento);
+    Evento atualizar(String id, Evento evento);
+    void remover(String id);
 }
