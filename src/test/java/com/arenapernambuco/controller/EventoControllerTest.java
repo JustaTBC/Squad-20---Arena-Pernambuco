@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -11,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("memory")
 class EventoControllerTest {
 
     @Autowired
@@ -51,6 +53,18 @@ class EventoControllerTest {
         mockMvc.perform(get("/eventos/999"))
                 .andExpect(status().isNotFound())
                 .andExpect(view().name("erro-404"));
+    }
+
+    @Test
+    void detalheEvento_idComPonto_retorna404() throws Exception {
+        mockMvc.perform(get("/eventos/evento.child"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void detalheEvento_idComDolar_retorna404() throws Exception {
+        mockMvc.perform(get("/eventos/evento$ref"))
+                .andExpect(status().isNotFound());
     }
 
     @Test
