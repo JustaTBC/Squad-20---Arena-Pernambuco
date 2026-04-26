@@ -11,6 +11,8 @@ public record Evento(
         String descricaoCurta,
         String descricaoCompleta,
         String imagemUrl,
-        boolean ativo
+        boolean ativo,
+        int capacidade,
+        int inscritos
 ) {
 }

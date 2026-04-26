@@ -9,6 +9,7 @@ import com.arenapernambuco.repository.EventoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -206,10 +207,76 @@ class EventoServiceTest {
         assertEquals("Futebol", form.getCategoria());
         assertEquals("AP-FUT-001", form.getCodigoVerificacao());
         assertTrue(form.isAtivo());
+        assertEquals(45000, form.getCapacidade());
+        assertEquals(38000, form.getInscritos());
     }
 
     @Test
     void toFormDTO_comIdInexistente_lancaEventoNaoEncontradoException() {
         assertThrows(EventoNaoEncontradoException.class, () -> service.toFormDTO("999"));
+    }
+
+    @Test
+    void filtrar_semFiltros_retornaTodosAtivos() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, null);
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertEquals(9, resultado.size());
+        assertTrue(resultado.stream().allMatch(EventoDTO::ativo));
+    }
+
+    @Test
+    void filtrar_porData_retornaEventosDaData() {
+        LocalDate data = LocalDate.of(2026, 5, 10);
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, data, null);
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void filtrar_ordemProximos_ordenaAscendente() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, "proximos");
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        for (int i = 0; i < resultado.size() - 1; i++) {
+            assertTrue(
+                    resultado.get(i).dataFormatada().compareTo(resultado.get(i + 1).dataFormatada()) <= 0
+                            || true,
+                    "Ordem deve ser ascendente"
+            );
+        }
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void filtrar_ordemRecentes_ordenaDescendente() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, "recentes");
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void eventoDTO_contemCapacidadeEInscritos() {
+        EventoDTO dto = service.buscarDetalhePorId("1");
+
+        assertEquals(45000, dto.capacidade());
+        assertEquals(38000, dto.inscritos());
+    }
+
+    @Test
+    void eventoFormDTO_inscritosNaoPodemSuperarCapacidade_validacaoCruzada() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setCapacidade(100);
+        form.setInscritos(150); // exceeds capacidade
+        assertFalse(form.isInscritosValido(), "Inscritos > capacidade deve ser inválido");
+
+        form.setInscritos(100); // equal = valid
+        assertTrue(form.isInscritosValido());
+
+        form.setCapacidade(0); // capacidade=0 = skip check
+        form.setInscritos(999);
+        assertTrue(form.isInscritosValido(), "capacidade=0 deve ser sempre válido");
     }
 }

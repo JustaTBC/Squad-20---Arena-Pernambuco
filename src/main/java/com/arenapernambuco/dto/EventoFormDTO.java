@@ -1,5 +1,7 @@
 package com.arenapernambuco.dto;
 
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -15,6 +17,7 @@ public class EventoFormDTO {
     private String categoria;
 
     @NotBlank(message = "Data e horário são obrigatórios")
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}", message = "Formato de data inválido")
     private String dataHora;
 
     @Size(max = 240, message = "Descrição curta deve ter no máximo 240 caracteres")
@@ -30,6 +33,12 @@ public class EventoFormDTO {
     @Pattern(regexp = "^$|[A-Za-z0-9-]+", message = "Código de verificação deve conter apenas letras, números e hífen")
     private String codigoVerificacao;
     private boolean ativo = true;
+
+    @Min(value = 0, message = "Capacidade não pode ser negativa")
+    private int capacidade;
+
+    @Min(value = 0, message = "Inscritos não pode ser negativo")
+    private int inscritos;
 
     public String getTitulo() { return titulo; }
     public void setTitulo(String titulo) { this.titulo = titulo; }
@@ -54,4 +63,15 @@ public class EventoFormDTO {
 
     public boolean isAtivo() { return ativo; }
     public void setAtivo(boolean ativo) { this.ativo = ativo; }
+
+    public int getCapacidade() { return capacidade; }
+    public void setCapacidade(int capacidade) { this.capacidade = capacidade; }
+
+    public int getInscritos() { return inscritos; }
+    public void setInscritos(int inscritos) { this.inscritos = inscritos; }
+
+    @AssertTrue(message = "Inscritos não pode superar a capacidade")
+    public boolean isInscritosValido() {
+        return capacidade == 0 || inscritos <= capacidade;
+    }
 }

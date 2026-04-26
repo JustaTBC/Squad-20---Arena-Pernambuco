@@ -179,9 +179,34 @@ class AdminEventoControllerTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void admin_removerEventoInexistente_retorna404() throws Exception {
+    void admin_removerEventoInexistente_redirecionaComErro() throws Exception {
         mockMvc.perform(post("/admin/eventos/999/remover")
                         .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/eventos"))
+                .andExpect(flash().attributeExists("erro"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void admin_editarComIdPonto_retorna404() throws Exception {
+        mockMvc.perform(get("/admin/eventos/evento.child/editar"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void admin_editarComIdDolar_retorna404() throws Exception {
+        mockMvc.perform(get("/admin/eventos/evento$ref/editar"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void admin_removerComIdPonto_redirecionaComErro() throws Exception {
+        mockMvc.perform(post("/admin/eventos/evento.child/remover")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(flash().attributeExists("erro"));
     }
 }

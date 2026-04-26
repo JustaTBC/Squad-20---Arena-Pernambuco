@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Eventos — Arena Pernambuco</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" integrity="sha384-/rJKQnzOkEo+daG0jMjU1IwwY9unxt1NBw3Ef2fmOJ3PW/TfAg2KXVoWwMZQZtw9" crossorigin="anonymous"/>
   <style>
     .eventos-empty {
       text-align: center;
@@ -28,9 +28,13 @@
     .evento-card__image {
       width: 100%;
       height: 200px;
-      background-size: cover;
-      background-position: center;
+      overflow: hidden;
       background-color: var(--bg-card-hover);
+    }
+    .evento-card__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -62,8 +66,8 @@
   <div class="eventos-grid" th:if="${not #lists.isEmpty(eventos)}">
     <article class="evento-card"
              th:each="e, iterStat : ${eventos}">
-      <div class="evento-card__image"
-           th:style="'background-image: url(' + ${e.imagemUrl} + ')'">
+      <div class="evento-card__image" th:if="${not #strings.isEmpty(e.imagemUrl)}">
+        <img th:src="${e.imagemUrl}" th:alt="${e.titulo}" loading="lazy"/>
       </div>
       <div class="evento-card__body">
         <div class="evento-card__meta">
@@ -94,9 +98,9 @@
 
 <div th:replace="~{fragments :: footer}"></div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js" integrity="sha384-wziAfh6b/qT+3LrqebF9WeK4+J5sehS6FA10J1t3a866kJ/fvU5UwofWnQyzLtwu" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha384-d+vyQ0dYcymoP8ndq2hW7FGC50nqGdXUEgoOUGxbbkAJwZqL7h+jKN0GGgn9hFDS" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js" integrity="sha384-iiCtod6ZId6zT42Bar9EFXNKZh8X4VliWYWFOuY3/t1AxCvLejXExXcbluoc57CJ" crossorigin="anonymous"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>

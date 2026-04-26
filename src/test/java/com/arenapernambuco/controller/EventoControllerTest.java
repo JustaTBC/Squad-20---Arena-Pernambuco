@@ -56,6 +56,18 @@ class EventoControllerTest {
     }
 
     @Test
+    void detalheEvento_idComPonto_retorna404() throws Exception {
+        mockMvc.perform(get("/eventos/evento.child"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void detalheEvento_idComDolar_retorna404() throws Exception {
+        mockMvc.perform(get("/eventos/evento$ref"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void listarEventos_comOrdenacao() throws Exception {
         mockMvc.perform(get("/eventos").param("ordem", "recentes"))
                 .andExpect(status().isOk())

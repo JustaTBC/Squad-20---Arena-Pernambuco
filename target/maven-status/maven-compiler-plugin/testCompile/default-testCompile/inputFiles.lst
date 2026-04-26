@@ -1,7 +1,13 @@
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\ArenaPernambucoApplicationTests.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\config\RateLimitFilterTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\config\SecurityConfigTest.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\controller\AdminDashboardControllerTest.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\controller\AdminEventoControllerTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\controller\EventoControllerTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\controller\PortalControllerTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\controller\VerificacaoControllerTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\repository\EventoMemoryRepositoryTest.java
 C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\service\EventoServiceTest.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\service\StatisticsServiceTest.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\staticresources\CalendarEnhancementTest.java
+C:\Users\Pedro\Desktop\POO\Squad-20---Arena-Pernambuco\src\test\java\com\arenapernambuco\staticresources\LayoutCssTest.java

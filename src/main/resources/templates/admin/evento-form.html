@@ -70,14 +70,31 @@
              placeholder="Deixe vazio para gerar automaticamente"/>
     </div>
 
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+      <div>
+        <label for="capacidade">Capacidade</label>
+        <input id="capacidade" type="number" min="0" th:field="*{capacidade}" class="form-control"
+               th:classappend="${#fields.hasErrors('capacidade')} ? 'is-invalid' : ''"/>
+        <span class="error-msg" th:if="${#fields.hasErrors('capacidade')}"
+              th:errors="*{capacidade}"></span>
+      </div>
+      <div>
+        <label for="inscritos">Inscritos</label>
+        <input id="inscritos" type="number" min="0" th:field="*{inscritos}" class="form-control"
+               th:classappend="${#fields.hasErrors('inscritos')} ? 'is-invalid' : ''"/>
+        <span class="error-msg" th:if="${#fields.hasErrors('inscritos')}"
+              th:errors="*{inscritos}"></span>
+      </div>
+    </div>
+
     <div style="display:flex; align-items:center; gap:0.5rem;">
       <input id="ativo" type="checkbox" th:field="*{ativo}"/>
       <label for="ativo" style="margin:0;">Evento ativo</label>
     </div>
 
     <div style="display:flex; gap:1rem;">
-      <button type="submit" class="btn btn-primary">Salvar</button>
-      <a th:href="@{/admin/eventos}" class="btn btn-secondary">Cancelar</a>
+      <button type="submit" class="btn btn--primary">Salvar</button>
+      <a th:href="@{/admin/eventos}" class="btn btn--ghost">Cancelar</a>
     </div>
   </form>
 </main>

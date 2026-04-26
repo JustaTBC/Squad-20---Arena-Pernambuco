@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.arenapernambuco.exception.EventoNaoEncontradoException;
 
 @Controller
 @RequestMapping("/admin/eventos")
@@ -66,8 +68,12 @@ public class AdminEventoController {
     }
 
     @PostMapping("/{id}/remover")
-    public String remover(@PathVariable String id) {
-        eventoService.remover(id);
+    public String remover(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        try {
+            eventoService.remover(id);
+        } catch (EventoNaoEncontradoException e) {
+            redirectAttributes.addFlashAttribute("erro", "Evento não encontrado.");
+        }
         return "redirect:/admin/eventos";
     }
 }

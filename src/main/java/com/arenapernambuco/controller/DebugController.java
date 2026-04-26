@@ -3,7 +3,7 @@ package com.arenapernambuco.controller;
 import com.arenapernambuco.dto.EventoDTO;
 import com.arenapernambuco.dto.EventoFiltroDTO;
 import com.arenapernambuco.model.Evento;
-import com.arenapernambuco.repository.EventoFirebaseRepository;
+import com.arenapernambuco.repository.EventoRepository;
 import com.arenapernambuco.service.EventoService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +17,10 @@ import java.util.Map;
 @Profile("debug")
 public class DebugController {
 
-    private final EventoFirebaseRepository repository;
+    private final EventoRepository repository;
     private final EventoService eventoService;
 
-    public DebugController(EventoFirebaseRepository repository, EventoService eventoService) {
+    public DebugController(EventoRepository repository, EventoService eventoService) {
         this.repository = repository;
         this.eventoService = eventoService;
     }

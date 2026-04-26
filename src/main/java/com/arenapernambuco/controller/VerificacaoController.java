@@ -28,6 +28,7 @@ public class VerificacaoController {
 
     @PostMapping("/verificar")
     public String verificar(@RequestParam(required = false) String codigo, Model model) {
+        model.addAttribute("submitted", true);
         String codigoLimpo = sanitizarCodigo(codigo);
 
         if (codigoLimpo.isEmpty()) {

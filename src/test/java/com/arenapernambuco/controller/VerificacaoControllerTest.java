@@ -1,5 +1,7 @@
 package com.arenapernambuco.controller;
 
+import com.arenapernambuco.config.RateLimitFilter;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +24,14 @@ class VerificacaoControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
+
+    @BeforeEach
+    void setUp() {
+        rateLimitFilter.limparContadores();
+    }
+
     @Test
     @WithMockUser(roles = "PARTICIPANTE")
     void formulario_retorna200() throws Exception {
@@ -37,6 +47,7 @@ class VerificacaoControllerTest {
                         .param("codigo", "AP-FUT-001")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("submitted", true))
                 .andExpect(model().attribute("ok", true))
                 .andExpect(model().attributeExists("evento"));
     }
@@ -48,6 +59,7 @@ class VerificacaoControllerTest {
                         .param("codigo", "AP-CUL-003")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("submitted", true))
                 .andExpect(model().attribute("ok", false))
                 .andExpect(model().attribute("inativo", true))
                 .andExpect(model().attributeExists("evento"))
@@ -62,6 +74,7 @@ class VerificacaoControllerTest {
                         .param("codigo", "XXXX")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("submitted", true))
                 .andExpect(model().attribute("ok", false));
     }
 
@@ -72,6 +85,7 @@ class VerificacaoControllerTest {
                         .param("codigo", "")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("submitted", true))
                 .andExpect(model().attribute("ok", false));
     }
 
@@ -82,7 +96,16 @@ class VerificacaoControllerTest {
                         .param("codigo", "<script>alert(1)</script>")
                         .with(csrf()))
                 .andExpect(status().isOk())
+                .andExpect(model().attribute("submitted", true))
                 .andExpect(model().attribute("ok", false));
+    }
+
+    @Test
+    @WithMockUser(roles = "PARTICIPANTE")
+    void formulario_GET_naoExibeResultado() throws Exception {
+        mockMvc.perform(get("/verificar"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeDoesNotExist("submitted"));
     }
 
     @Test

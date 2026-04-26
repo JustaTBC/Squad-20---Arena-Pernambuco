@@ -1,6 +1,5 @@
 package com.arenapernambuco.repository;
 
-import com.arenapernambuco.dto.EventoFiltroDTO;
 import com.arenapernambuco.model.Evento;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -81,48 +80,81 @@ public class EventoFirebaseRepository implements EventoRepository {
     @Override
     public Optional<Evento> buscarPorCodigo(String codigo) {
         if (codigo == null || codigo.isBlank()) return Optional.empty();
-        return buscarTodos().stream()
-                .filter(e -> e.codigoVerificacao().equalsIgnoreCase(codigo.trim()))
-                .findFirst();
-    }
+        String codigoNormalizado = codigo.trim().toUpperCase();
 
-    @Override
-    public List<Evento> filtrar(EventoFiltroDTO filtro) {
-        var stream = buscarTodos().stream().filter(Evento::ativo);
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<DataSnapshot> resultado = new AtomicReference<>();
 
-        if (filtro.categoria() != null && !filtro.categoria().isBlank()) {
-            stream = stream.filter(e -> e.categoria().equalsIgnoreCase(filtro.categoria()));
+        eventosRef.orderByChild("codigoVerificacao").equalTo(codigoNormalizado)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        resultado.set(snapshot);
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        log.error("Busca por codigo cancelada: {}", error.getMessage());
+                        latch.countDown();
+                    }
+                });
+
+        try {
+            if (!latch.await(TIMEOUT_SEGUNDOS, TimeUnit.SECONDS)) {
+                log.warn("Timeout ao buscar por codigo '{}'", codigoNormalizado);
+                return Optional.empty();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return Optional.empty();
         }
 
-        if (filtro.data() != null) {
-            stream = stream.filter(e -> e.dataHora().toLocalDate().equals(filtro.data()));
+        DataSnapshot snapshot = resultado.get();
+        if (snapshot == null || !snapshot.exists()) {
+            return Optional.empty();
         }
 
-        Comparator<Evento> comparator = Comparator.comparing(Evento::dataHora);
-        if ("recentes".equalsIgnoreCase(filtro.ordem())) {
-            comparator = comparator.reversed();
+        for (DataSnapshot filho : snapshot.getChildren()) {
+            try {
+                return Optional.of(snapshotParaEvento(filho));
+            } catch (Exception e) {
+                log.warn("Erro ao converter evento da query por codigo: {}", e.getMessage());
+            }
         }
-
-        return stream.sorted(comparator).collect(Collectors.toList());
+        return Optional.empty();
     }
 
     @Override
     public Evento salvar(Evento evento) {
         Map<String, Object> dados = eventoParaMapa(evento);
-        eventosRef.child(evento.id()).setValueAsync(dados);
+        aguardarEscrita(eventosRef.child(evento.id()).setValueAsync(dados), "salvar", evento.id());
         return evento;
     }
 
     @Override
     public Evento atualizar(String id, Evento evento) {
         Map<String, Object> dados = eventoParaMapa(evento);
-        eventosRef.child(id).setValueAsync(dados);
+        aguardarEscrita(eventosRef.child(id).setValueAsync(dados), "atualizar", id);
         return evento;
     }
 
     @Override
     public void remover(String id) {
-        eventosRef.child(id).removeValueAsync();
+        aguardarEscrita(eventosRef.child(id).removeValueAsync(), "remover", id);
+    }
+
+    private void aguardarEscrita(com.google.api.core.ApiFuture<Void> future, String operacao, String id) {
+        try {
+            future.get(TIMEOUT_SEGUNDOS, TimeUnit.SECONDS);
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw new RuntimeException("Falha ao " + operacao + " evento id=" + id, e.getCause());
+        } catch (java.util.concurrent.TimeoutException e) {
+            throw new RuntimeException("Timeout ao " + operacao + " evento id=" + id, e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Operação interrompida ao " + operacao + " evento id=" + id, e);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -195,8 +227,11 @@ public class EventoFirebaseRepository implements EventoRepository {
         String imagemUrl = Objects.toString(dados.get("imagemUrl"), "");
         boolean ativo = parsarBoolean(dados.get("ativo"), true);
 
+        int capacidade = parsarInt(dados.get("capacidade"), 0);
+        int inscritos   = parsarInt(dados.get("inscritos"), 0);
+
         return new Evento(id, titulo, dataHora, categoria, codigoVerificacao,
-                descricaoCurta, descricaoCompleta, imagemUrl, ativo);
+                descricaoCurta, descricaoCompleta, imagemUrl, ativo, capacidade, inscritos);
     }
 
     private LocalDateTime parsarDataHora(String id, String valor) {
@@ -221,6 +256,20 @@ public class EventoFirebaseRepository implements EventoRepository {
         return Boolean.parseBoolean(valor.toString());
     }
 
+    private int parsarInt(Object valor, int defaultValue) {
+        if (valor == null) return defaultValue;
+        if (valor instanceof Number n) {
+            long lv = n.longValue();
+            if (lv < 0 || lv > Integer.MAX_VALUE) {
+                log.warn("Valor numérico fora do intervalo int: {}, usando default", lv);
+                return defaultValue;
+            }
+            return (int) lv;
+        }
+        try { return Integer.parseInt(valor.toString()); }
+        catch (NumberFormatException e) { return defaultValue; }
+    }
+
     private Map<String, Object> eventoParaMapa(Evento evento) {
         Map<String, Object> mapa = new LinkedHashMap<>();
         mapa.put("titulo", evento.titulo());
@@ -231,6 +280,8 @@ public class EventoFirebaseRepository implements EventoRepository {
         mapa.put("descricaoCompleta", evento.descricaoCompleta());
         mapa.put("imagemUrl", evento.imagemUrl());
         mapa.put("ativo", evento.ativo());
+        mapa.put("capacidade", evento.capacidade());
+        mapa.put("inscritos", evento.inscritos());
         return mapa;
     }
 }

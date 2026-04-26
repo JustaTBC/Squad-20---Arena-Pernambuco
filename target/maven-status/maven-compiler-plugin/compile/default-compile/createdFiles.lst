@@ -1,9 +1,12 @@
 com\arenapernambuco\dto\EventoDTO.class
 com\arenapernambuco\repository\EventoFirebaseRepository$1.class
 com\arenapernambuco\controller\PortalController.class
+com\arenapernambuco\dto\CategoriaStatDTO.class
 com\arenapernambuco\config\FirebaseSeeder.class
 com\arenapernambuco\config\SecurityConfig.class
+com\arenapernambuco\service\StatisticsService.class
 com\arenapernambuco\config\FirebaseConfig.class
+com\arenapernambuco\controller\AdminDashboardController.class
 com\arenapernambuco\controller\VerificacaoController.class
 com\arenapernambuco\repository\EventoRepository.class
 com\arenapernambuco\controller\EventoController.class
@@ -12,6 +15,11 @@ com\arenapernambuco\exception\GlobalExceptionHandler.class
 com\arenapernambuco\exception\EventoNaoEncontradoException.class
 com\arenapernambuco\ArenaPernambucoApplication.class
 com\arenapernambuco\repository\EventoMemoryRepository.class
+com\arenapernambuco\controller\AdminEventoController.class
 com\arenapernambuco\model\Evento.class
+com\arenapernambuco\controller\AdminController.class
+com\arenapernambuco\dto\DashboardDTO.class
 com\arenapernambuco\service\EventoService.class
+com\arenapernambuco\controller\DebugController.class
 com\arenapernambuco\dto\EventoFiltroDTO.class
+com\arenapernambuco\dto\EventoFormDTO.class

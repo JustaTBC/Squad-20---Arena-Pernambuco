@@ -9,6 +9,8 @@ public record EventoDTO(
         String descricaoCompleta,
         String imagemUrl,
         String badgeCor,
-        boolean ativo
+        boolean ativo,
+        int capacidade,
+        int inscritos
 ) {
 }

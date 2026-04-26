@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title th:text="${evento.titulo} + ' — Arena Pernambuco'">Evento — Arena Pernambuco</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" integrity="sha384-/rJKQnzOkEo+daG0jMjU1IwwY9unxt1NBw3Ef2fmOJ3PW/TfAg2KXVoWwMZQZtw9" crossorigin="anonymous"/>
   <style>
     .detalhe-hero {
       position: relative;
@@ -17,9 +17,15 @@
       margin-bottom: 2rem;
       border-radius: var(--radius-lg);
       overflow: hidden;
-      background-size: cover;
-      background-position: center;
       background-color: var(--bg-card);
+    }
+    .detalhe-hero__bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
     }
     .detalhe-hero::after {
       content: '';
@@ -64,9 +70,8 @@
 <div th:replace="~{fragments :: header}"></div>
 
 <main>
-  <section class="detalhe-hero"
-           th:style="'background-image: url(' + ${evento.imagemUrl} + ')'"
-           data-aos="fade-in">
+  <section class="detalhe-hero" data-aos="fade-in">
+    <img th:if="${not #strings.isEmpty(evento.imagemUrl)}" class="detalhe-hero__bg" th:src="${evento.imagemUrl}" th:alt="${evento.titulo}" loading="lazy"/>
     <div class="detalhe-meta">
       <span class="badge" th:text="${evento.categoria}" th:style="'background-color:' + ${evento.badgeCor} + '1a; color:' + ${evento.badgeCor}">Categoria</span>
       <span class="text-muted" th:text="${evento.dataFormatada}">01/01/2026</span>
@@ -87,9 +92,9 @@
 
 <div th:replace="~{fragments :: footer}"></div>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-<script src="https://unpkg.com/lenis@1/dist/lenis.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js" integrity="sha384-wziAfh6b/qT+3LrqebF9WeK4+J5sehS6FA10J1t3a866kJ/fvU5UwofWnQyzLtwu" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" integrity="sha384-d+vyQ0dYcymoP8ndq2hW7FGC50nqGdXUEgoOUGxbbkAJwZqL7h+jKN0GGgn9hFDS" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lenis@1/dist/lenis.min.js" integrity="sha384-iiCtod6ZId6zT42Bar9EFXNKZh8X4VliWYWFOuY3/t1AxCvLejXExXcbluoc57CJ" crossorigin="anonymous"></script>
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
