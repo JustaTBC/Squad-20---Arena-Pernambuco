@@ -66,3 +66,21 @@ Vídeo demonstrando a navegação pelo site e explicando as histórias implement
 https://youtu.be/Yfrs0JDwcEY
 
 ---
+
+# 📦 Entrega 3
+
+---
+
+## 🎥 Screencast da aplicação
+
+Vídeo demonstrando a navegação pelo site e explicando as histórias implementadas.
+
+▶️ **Assistir no YouTube**
+
+https://youtu.be/Y7xjBytQVKM
+
+## 🎥 Issue Bug Tracker
+<img width="1176" height="414" alt="print do issue bug " src="https://github.com/user-attachments/assets/de6b54c9-05ca-42d8-ae14-42ea49c4a77e" />
+Obs: o ''Corrigir falhas de segurança, validação e estabilidade no fluxo de eventos'' Possui 5 bugs relatados em apenas um issue. Para mais detalhes, conferir diretamente.
+
+---
