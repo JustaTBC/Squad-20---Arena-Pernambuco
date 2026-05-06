@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin — Dashboard | Arena Pernambuco</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="admin-page">
+  <div class="admin-toolbar">
+    <div>
+      <p class="admin-kicker">Painel administrativo</p>
+      <h1 class="page-title">Dashboard</h1>
+    </div>
+    <a th:href="@{/admin/eventos}" class="btn btn--secondary">Gerenciar Eventos</a>
+  </div>
+
+  <!-- Cards KPI -->
+  <div class="dashboard-kpi">
+    <div class="kpi-card">
+      <p class="kpi-card__label">Eventos Ativos</p>
+      <p class="kpi-card__value" th:text="${dash.totalAtivos}">0</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-card__label">Categoria Mais Popular</p>
+      <p class="kpi-card__value" th:text="${dash.categoriaMaisPopular}">N/A</p>
+    </div>
+  </div>
+
+  <!-- Tabela de estatísticas por categoria -->
+  <section class="dashboard-section">
+    <h2 class="dashboard-section__title">Estatísticas por Categoria</h2>
+    <div class="admin-table-wrap">
+      <table class="admin-table dashboard-stats-table">
+        <thead>
+          <tr>
+            <th>Categoria</th>
+            <th>Eventos</th>
+            <th>Ocupação Média (%)</th>
+            <th>Mediana (%)</th>
+            <th>Desvio Padrão</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="stat : ${dash.statsPorCategoria}">
+            <td><span class="badge badge--accent" th:text="${stat.categoria}">Cat</span></td>
+            <td th:text="${stat.count}">0</td>
+            <td th:text="${#numbers.formatDecimal(stat.mediaOcupacao, 1, 1)}">0.0</td>
+            <td th:text="${#numbers.formatDecimal(stat.medianaOcupacao, 1, 1)}">0.0</td>
+            <td th:text="${#numbers.formatDecimal(stat.desvioPadrao, 1, 1)}">0.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Gráfico de tendência temporal -->
+  <section class="dashboard-section">
+    <h2 class="dashboard-section__title">Tendência Temporal — Eventos por Semana (últimas 12 semanas)</h2>
+    <div class="dashboard-chart-wrap">
+      <canvas id="eventosPorSemana" height="120"></canvas>
+    </div>
+  </section>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+        integrity="sha256-DiMmxoaAcr7BWSdgxnKQQ8ruopYKK0bO5qIZKqxqv/A="
+        crossorigin="anonymous"></script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const labels  = /*[[${dash.semanaLabels}]]*/ [];
+  const data    = /*[[${dash.eventosPorSemana}]]*/ [];
+  const ctx     = document.getElementById('eventosPorSemana').getContext('2d');
+
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Eventos',
+        data: data,
+        backgroundColor: 'rgba(255, 107, 53, 0.7)',
+        borderColor: '#FF6B35',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#FFFFFF' } }
+      },
+      scales: {
+        x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: {
+          beginAtZero: true,
+          ticks: { color: '#9ca3af', stepSize: 1 },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        }
+      }
+    }
+  });
+  /*]]>*/
+</script>
+</body>
+</html>

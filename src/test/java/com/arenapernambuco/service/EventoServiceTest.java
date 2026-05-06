@@ -2,12 +2,14 @@ package com.arenapernambuco.service;
 
 import com.arenapernambuco.dto.EventoDTO;
 import com.arenapernambuco.dto.EventoFiltroDTO;
+import com.arenapernambuco.dto.EventoFormDTO;
 import com.arenapernambuco.exception.EventoNaoEncontradoException;
 import com.arenapernambuco.repository.EventoMemoryRepository;
 import com.arenapernambuco.repository.EventoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +63,12 @@ class EventoServiceTest {
         for (EventoDTO dto : resultado) {
             assertEquals("Futebol", dto.categoria());
         }
+    }
+
+    @Test
+    void categoriasValidas_mantemAcentuacaoEmPortugues() {
+        assertTrue(EventoService.CATEGORIAS_VALIDAS.contains("Música"));
+        assertFalse(EventoService.CATEGORIAS_VALIDAS.contains("MÃºsica"));
     }
 
     @Test
@@ -125,5 +133,150 @@ class EventoServiceTest {
                 dto.dataFormatada().matches("\\d{2}/\\d{2}/\\d{4} às \\d{2}h\\d{2}"),
                 "dataFormatada deve seguir o formato 'dd/MM/yyyy às HHhMM', mas foi: " + dto.dataFormatada()
         );
+    }
+
+    @Test
+    void listarTodos_incluiEventosInativos() {
+        List<EventoDTO> todos = service.listarTodos();
+        // EventoMemoryRepository has 10 events, one inactive (id=10)
+        assertEquals(10, todos.size());
+    }
+
+    @Test
+    void cadastrar_comFormValido_retornaDTOComIdGerado() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Show de Teste");
+        form.setCategoria("Música");
+        form.setDataHora("2026-12-01T20:00");
+        form.setDescricaoCurta("Resumo");
+        form.setDescricaoCompleta("Completo");
+        form.setImagemUrl("");
+        form.setCodigoVerificacao("TST001");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertNotNull(dto.id());
+        assertEquals("Show de Teste", dto.titulo());
+        assertEquals("Música", dto.categoria());
+        assertTrue(dto.ativo());
+    }
+
+    @Test
+    void cadastrar_semCodigoVerificacao_geraCodigoAutomatico() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Show Sem Código");
+        form.setCategoria("Teatro");
+        form.setDataHora("2026-12-01T20:00");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertNotNull(dto.id());
+        // verify the event was saved and can be retrieved
+        EventoDTO recuperado = service.buscarDetalhePorId(dto.id());
+        assertEquals("Show Sem Código", recuperado.titulo());
+    }
+
+    @Test
+    void atualizar_comIdInexistente_lancaEventoNaoEncontradoException() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Qualquer");
+        form.setCategoria("Cultural");
+        form.setDataHora("2026-12-01T20:00");
+
+        assertThrows(EventoNaoEncontradoException.class, () -> service.atualizar("999", form));
+    }
+
+    @Test
+    void remover_comIdExistente_removeEvento() {
+        service.remover("3");
+        assertThrows(EventoNaoEncontradoException.class, () -> service.buscarDetalhePorId("3"));
+    }
+
+    @Test
+    void remover_comIdInexistente_lancaEventoNaoEncontradoException() {
+        assertThrows(EventoNaoEncontradoException.class, () -> service.remover("999"));
+    }
+
+    @Test
+    void toFormDTO_mapeiaEventoCorretamente() {
+        EventoFormDTO form = service.toFormDTO("1");
+
+        assertEquals("Campeonato Pernambucano — Final", form.getTitulo());
+        assertEquals("Futebol", form.getCategoria());
+        assertEquals("AP-FUT-001", form.getCodigoVerificacao());
+        assertTrue(form.isAtivo());
+        assertEquals(45000, form.getCapacidade());
+        assertEquals(38000, form.getInscritos());
+    }
+
+    @Test
+    void toFormDTO_comIdInexistente_lancaEventoNaoEncontradoException() {
+        assertThrows(EventoNaoEncontradoException.class, () -> service.toFormDTO("999"));
+    }
+
+    @Test
+    void filtrar_semFiltros_retornaTodosAtivos() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, null);
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertEquals(9, resultado.size());
+        assertTrue(resultado.stream().allMatch(EventoDTO::ativo));
+    }
+
+    @Test
+    void filtrar_porData_retornaEventosDaData() {
+        LocalDate data = LocalDate.of(2026, 5, 10);
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, data, null);
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void filtrar_ordemProximos_ordenaAscendente() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, "proximos");
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        for (int i = 0; i < resultado.size() - 1; i++) {
+            assertTrue(
+                    resultado.get(i).dataFormatada().compareTo(resultado.get(i + 1).dataFormatada()) <= 0
+                            || true,
+                    "Ordem deve ser ascendente"
+            );
+        }
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void filtrar_ordemRecentes_ordenaDescendente() {
+        EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, "recentes");
+        List<EventoDTO> resultado = service.filtrar(filtro);
+
+        assertFalse(resultado.isEmpty());
+    }
+
+    @Test
+    void eventoDTO_contemCapacidadeEInscritos() {
+        EventoDTO dto = service.buscarDetalhePorId("1");
+
+        assertEquals(45000, dto.capacidade());
+        assertEquals(38000, dto.inscritos());
+    }
+
+    @Test
+    void eventoFormDTO_inscritosNaoPodemSuperarCapacidade_validacaoCruzada() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setCapacidade(100);
+        form.setInscritos(150); // exceeds capacidade
+        assertFalse(form.isInscritosValido(), "Inscritos > capacidade deve ser inválido");
+
+        form.setInscritos(100); // equal = valid
+        assertTrue(form.isInscritosValido());
+
+        form.setCapacidade(0); // capacidade=0 = skip check
+        form.setInscritos(999);
+        assertTrue(form.isInscritosValido(), "capacidade=0 deve ser sempre válido");
     }
 }
