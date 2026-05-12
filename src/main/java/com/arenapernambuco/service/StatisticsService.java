@@ -99,6 +99,7 @@ public class StatisticsService {
             LocalDate inicio = inicioJanela.plusWeeks(i);
             LocalDate fim    = inicio.plusDays(6);
             long count = todos.stream()
+                    .filter(e -> e.dataHora() != null)
                     .filter(e -> {
                         LocalDate d = e.dataHora().toLocalDate();
                         return !d.isBefore(inicio) && !d.isAfter(fim);

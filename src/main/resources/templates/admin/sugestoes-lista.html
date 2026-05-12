@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin - Sugestões | Arena Pernambuco</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="admin-page">
+  <div class="admin-toolbar">
+    <div>
+      <p class="admin-kicker">Painel administrativo</p>
+      <h1 class="page-title">Sugestões de Cidadãos</h1>
+    </div>
+  </div>
+
+  <div th:if="${#lists.isEmpty(sugestoes)}" class="admin-empty-state">
+    <p>Nenhuma sugestão recebida ainda.</p>
+  </div>
+
+  <div th:unless="${#lists.isEmpty(sugestoes)}" class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Tipo de Evento</th>
+          <th>Descrição</th>
+          <th>Público Estimado</th>
+          <th>Status</th>
+          <th>Recebida em</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="sugestao : ${sugestoes}">
+          <td class="admin-table__title" th:text="${sugestao.tipoEvento}">Tipo</td>
+          <td th:text="${sugestao.descricaoIdeia}">Descrição</td>
+          <td th:text="${sugestao.publicoEstimado}">0</td>
+          <td>
+            <span th:class="${sugestao.status.name() == 'APROVADA'} ? 'badge badge--success' :
+                             (${sugestao.status.name() == 'REJEITADA'} ? 'badge badge--danger' :
+                              'badge badge--accent')"
+                  th:text="${sugestao.status}">PENDENTE</span>
+          </td>
+          <td th:text="${sugestao.criadaEmFormatada}">Data</td>
+          <td>
+            <div class="admin-actions">
+              <form th:action="@{/admin/sugestoes/{id}/remover(id=${sugestao.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button type="submit" class="btn btn--danger btn--sm"
+                        onclick="return confirm('Confirmar remoção desta sugestão?')">Remover</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+</body>
+</html>

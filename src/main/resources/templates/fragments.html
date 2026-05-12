@@ -11,9 +11,11 @@
     <nav class="nav">
       <a th:href="@{/}">Início</a>
       <a th:href="@{/eventos}">Eventos</a>
+      <a th:href="@{/sugestoes}">Sugerir Evento</a>
       <a th:href="@{/verificar}" sec:authorize="hasAnyRole('PARTICIPANTE','ADMIN')">Verificar</a>
       <a th:href="@{/admin/eventos}" sec:authorize="hasRole('ADMIN')">Admin</a>
       <a th:href="@{/admin/dashboard}" sec:authorize="hasRole('ADMIN')">Dashboard</a>
+      <a th:href="@{/admin/sugestoes}" sec:authorize="hasRole('ADMIN')">Sugestões</a>
       <span class="nav-user" sec:authorize="isAuthenticated()">
         <span class="nav-user__name" sec:authentication="name">user</span>
         <form th:action="@{/logout}" method="post" style="display:inline;">

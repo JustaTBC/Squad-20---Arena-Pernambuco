@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sugerir Evento | Arena Pernambuco</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main class="container" style="padding: 2rem 1rem; max-width: 640px;">
+  <p class="admin-kicker">Participação cidadã</p>
+  <h1 class="section-title">Sugerir Novo Evento</h1>
+  <p style="margin-bottom:2rem; color:var(--color-muted, #888);">
+    Compartilhe sua ideia e ajude a Arena Pernambuco a criar mais atividades para a comunidade.
+  </p>
+
+  <form th:action="@{/sugestoes}" th:object="${form}" method="post"
+        style="display:flex; flex-direction:column; gap:1.5rem;">
+
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+    <div>
+      <label for="tipoEvento">Tipo de Evento *</label>
+      <input id="tipoEvento" type="text" th:field="*{tipoEvento}" class="form-control"
+             placeholder="Ex: Festival de Forró, Corrida de Rua, Exposição de Arte..."
+             th:classappend="${#fields.hasErrors('tipoEvento')} ? ' is-invalid' : ''"/>
+      <span class="error-msg" th:if="${#fields.hasErrors('tipoEvento')}"
+            th:errors="*{tipoEvento}"></span>
+    </div>
+
+    <div>
+      <label for="descricaoIdeia">Descrição da Ideia *</label>
+      <textarea id="descricaoIdeia" th:field="*{descricaoIdeia}" class="form-control" rows="5"
+                placeholder="Descreva brevemente sua ideia de evento..."
+                th:classappend="${#fields.hasErrors('descricaoIdeia')} ? ' is-invalid' : ''"></textarea>
+      <span class="error-msg" th:if="${#fields.hasErrors('descricaoIdeia')}"
+            th:errors="*{descricaoIdeia}"></span>
+    </div>
+
+    <div>
+      <label for="publicoEstimado">Público Estimado *</label>
+      <input id="publicoEstimado" type="number" min="1" th:field="*{publicoEstimado}"
+             class="form-control"
+             th:classappend="${#fields.hasErrors('publicoEstimado')} ? ' is-invalid' : ''"/>
+      <span class="error-msg" th:if="${#fields.hasErrors('publicoEstimado')}"
+            th:errors="*{publicoEstimado}"></span>
+    </div>
+
+    <div style="display:flex; gap:1rem;">
+      <button type="submit" class="btn btn--primary">Enviar Sugestão</button>
+      <a th:href="@{/eventos}" class="btn btn--ghost">Cancelar</a>
+    </div>
+  </form>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

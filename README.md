@@ -66,3 +66,22 @@ Vídeo demonstrando a navegação pelo site e explicando as histórias implement
 https://youtu.be/Yfrs0JDwcEY
 
 ---
+
+# 📦 Entrega 3
+
+---
+
+## 🎥 Screencast da aplicação
+
+Vídeo demonstrando a navegação pelo site e explicando as histórias implementadas.
+
+▶️ **Assistir no YouTube**
+
+https://youtu.be/Y7xjBytQVKM
+
+---
+
+🎥 **Issue Bug Tracker**
+
+<img width="1333" height="240" alt="bug tracker closed" src="https://github.com/user-attachments/assets/9864ba1e-4858-4980-860c-691b26761478" />
+<img width="1268" height="236" alt="bug tracker atualização" src="https://github.com/user-attachments/assets/e40c79a1-16ea-4233-971c-67f963538a5b" />

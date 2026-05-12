@@ -20,6 +20,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/eventos", "/eventos/**").permitAll()
+                .requestMatchers("/sugestoes", "/sugestoes/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
                 .requestMatchers("/login", "/erro-403").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")

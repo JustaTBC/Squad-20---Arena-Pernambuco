@@ -51,7 +51,8 @@ class CalendarEnhancementTest {
     private String carregar(String resource) throws IOException {
         try (var input = getClass().getResourceAsStream(resource)) {
             assertThat(input).isNotNull();
-            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(input.readAllBytes(), StandardCharsets.UTF_8)
+                    .replace("\r\n", "\n");
         }
     }
 }

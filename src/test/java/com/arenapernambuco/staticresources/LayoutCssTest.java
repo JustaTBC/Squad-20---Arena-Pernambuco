@@ -41,7 +41,8 @@ class LayoutCssTest {
     private String carregarCss() throws IOException {
         try (var input = getClass().getResourceAsStream("/static/css/style.css")) {
             assertThat(input).isNotNull();
-            return new String(input.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(input.readAllBytes(), StandardCharsets.UTF_8)
+                    .replace("\r\n", "\n");
         }
     }
 }
