@@ -2,6 +2,7 @@ package com.arenapernambuco.service;
 
 import com.arenapernambuco.dto.CategoriaStatDTO;
 import com.arenapernambuco.dto.DashboardDTO;
+import com.arenapernambuco.dto.EventoOcupacaoDTO;
 import com.arenapernambuco.model.Evento;
 import com.arenapernambuco.repository.EventoRepository;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,34 @@ public class StatisticsService {
         List<CategoriaStatDTO> stats = calcularStatsPorCategoria(todos);
         List<String> labels   = calcularSemanaLabels(inicioJanela);
         List<Long> contagens  = calcularEventosPorSemana(todos, inicioJanela);
+        long totalInscritos = ativos.stream().mapToLong(Evento::inscritos).sum();
+        double ocupacaoMediaGeral = calcularOcupacaoMediaGeral(ativos);
+        List<EventoOcupacaoDTO> topEventos = calcularTopEventosPorOcupacao(ativos);
 
-        return new DashboardDTO(totalAtivos, categoriaMaisPopular, stats, labels, contagens);
+        return new DashboardDTO(totalAtivos, categoriaMaisPopular, stats, labels, contagens,
+                totalInscritos, ocupacaoMediaGeral, topEventos);
+    }
+
+    private double calcularOcupacaoMediaGeral(List<Evento> ativos) {
+        return ativos.stream()
+                .filter(e -> e.capacidade() > 0)
+                .mapToDouble(e -> (double) e.inscritos() / e.capacidade() * 100.0)
+                .average()
+                .orElse(0.0);
+    }
+
+    private List<EventoOcupacaoDTO> calcularTopEventosPorOcupacao(List<Evento> ativos) {
+        return ativos.stream()
+                .filter(e -> e.capacidade() > 0)
+                .map(e -> new EventoOcupacaoDTO(
+                        e.titulo(),
+                        e.categoria(),
+                        e.inscritos(),
+                        e.capacidade(),
+                        (double) e.inscritos() / e.capacidade() * 100.0))
+                .sorted(Comparator.comparingDouble(EventoOcupacaoDTO::ocupacaoPct).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
     }
 
     private String calcularCategoriaMaisPopular(List<Evento> ativos) {

@@ -7,6 +7,9 @@ public record DashboardDTO(
         String categoriaMaisPopular,
         List<CategoriaStatDTO> statsPorCategoria,
         List<String> semanaLabels,
-        List<Long> eventosPorSemana
+        List<Long> eventosPorSemana,
+        long totalInscritos,
+        double ocupacaoMediaGeral,
+        List<EventoOcupacaoDTO> topEventosPorOcupacao
 ) {
 }

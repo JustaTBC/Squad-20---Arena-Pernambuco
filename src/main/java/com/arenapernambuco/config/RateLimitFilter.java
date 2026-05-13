@@ -10,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
@@ -54,11 +55,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static class RequestCounter {
         private final Instant windowStart;
-        private int count;
+        private final AtomicInteger count;
 
         RequestCounter(Instant windowStart, int count) {
             this.windowStart = windowStart;
-            this.count = count;
+            this.count = new AtomicInteger(count);
         }
 
         boolean isExpired(Instant now) {
@@ -66,11 +67,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         void incrementar() {
-            count++;
+            count.incrementAndGet();
         }
 
         int getCount() {
-            return count;
+            return count.get();
         }
     }
 }

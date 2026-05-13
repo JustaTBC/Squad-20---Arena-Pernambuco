@@ -11,6 +11,7 @@ public record EventoDTO(
         String badgeCor,
         boolean ativo,
         int capacidade,
-        int inscritos
+        int inscritos,
+        String codigoVerificacao
 ) {
 }

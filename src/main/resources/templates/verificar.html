@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Verificar Evento — Arena Pernambuco</title>
+  <title>Verificar Código — Arena Pernambuco</title>
   <link rel="stylesheet" th:href="@{/css/style.css}"/>
   <style>
     .verificar-wrapper {
@@ -26,13 +26,13 @@
 
 <main>
   <div class="verificar-wrapper">
-    <h1 class="page-title">Verificar Evento</h1>
+    <h1 class="page-title">Verificar Código</h1>
 
     <section class="form-card">
       <form class="form-verificar" th:action="@{/verificar}" method="post">
-        <label for="codigo">Código de verificação</label>
+        <label for="codigo">Código de evento ou ingresso</label>
         <input type="text" id="codigo" name="codigo" autocomplete="off"
-               placeholder="Ex.: AP-2026-FUT-SEM1"
+               placeholder="Ex.: AP-FUT-001 ou A3B7C2D1"
                th:value="${codigoInformado}"/>
         <p class="hint">O código não diferencia maiúsculas e minúsculas.</p>
         <p style="margin-top: 1.25rem;">
@@ -40,56 +40,94 @@
         </p>
       </form>
 
-      <div th:if="${submitted == true and ok == true}" class="resultado resultado--ok">
+      <!-- EVENTO ATIVO -->
+      <div th:if="${submitted == true and tipo == 'evento_ativo'}" class="resultado resultado--ok">
         <svg class="resultado__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
           <polyline points="22 4 12 14.01 9 11.01"/>
         </svg>
         <h3>Evento verificado</h3>
-        <p>O código corresponde a um evento cadastrado.</p>
+        <p>O código corresponde a um evento cadastrado e ativo.</p>
         <dl th:if="${evento != null}">
-          <dt>Título</dt>
-          <dd th:text="${evento.titulo}">—</dd>
-          <dt>Data</dt>
-          <dd th:text="${evento.dataFormatada}">—</dd>
-          <dt>Categoria</dt>
-          <dd th:text="${evento.categoria}">—</dd>
-          <dt>Descrição</dt>
-          <dd th:text="${evento.descricaoCurta}">—</dd>
+          <dt>Título</dt><dd th:text="${evento.titulo}">—</dd>
+          <dt>Data</dt><dd th:text="${evento.dataFormatada}">—</dd>
+          <dt>Categoria</dt><dd th:text="${evento.categoria}">—</dd>
+          <dt>Descrição</dt><dd th:text="${evento.descricaoCurta}">—</dd>
         </dl>
       </div>
 
-      <div th:if="${submitted == true and inativo == true}" class="resultado resultado--erro">
+      <!-- EVENTO INATIVO -->
+      <div th:if="${submitted == true and tipo == 'evento_inativo'}" class="resultado resultado--erro">
         <svg class="resultado__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <line x1="12" y1="7" x2="12" y2="13"/>
           <line x1="12" y1="17" x2="12.01" y2="17"/>
         </svg>
         <h3>Evento inativo</h3>
-        <p>Este evento est&aacute; cadastrado, mas n&atilde;o est&aacute; ativo no momento. Busque contato com o suporte.</p>
+        <p>Este evento está cadastrado, mas não está ativo no momento. Busque contato com o suporte.</p>
         <dl th:if="${evento != null}">
-          <dt>T&iacute;tulo</dt>
-          <dd th:text="${evento.titulo}">&mdash;</dd>
-          <dt>Data</dt>
-          <dd th:text="${evento.dataFormatada}">&mdash;</dd>
-          <dt>Categoria</dt>
-          <dd th:text="${evento.categoria}">&mdash;</dd>
-          <dt>Descri&ccedil;&atilde;o</dt>
-          <dd th:text="${evento.descricaoCurta}">&mdash;</dd>
+          <dt>Título</dt><dd th:text="${evento.titulo}">—</dd>
+          <dt>Data</dt><dd th:text="${evento.dataFormatada}">—</dd>
+          <dt>Categoria</dt><dd th:text="${evento.categoria}">—</dd>
         </dl>
       </div>
 
-      <div th:if="${submitted == true and ok == false and inativo != true}" class="resultado resultado--erro">
+      <!-- INGRESSO ATIVO -->
+      <div th:if="${submitted == true and tipo == 'ingresso_ativo'}" class="resultado resultado--ok">
+        <svg class="resultado__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h3>Ingresso válido</h3>
+        <p>Ingresso ativo e verificado com sucesso.</p>
+        <dl th:if="${ingresso != null}">
+          <dt>Código do Ingresso</dt><dd><code th:text="${ingresso.codigoIngresso}">—</code></dd>
+          <dt>Evento</dt><dd th:text="${ingresso.eventoTitulo}">—</dd>
+          <dt>Código do Evento</dt><dd><code th:text="${ingresso.eventoCodigoVerificacao}">—</code></dd>
+          <dt>Categoria</dt><dd th:text="${ingresso.eventoCategoria}">—</dd>
+          <dt>Data do Evento</dt><dd th:text="${ingresso.eventoDataFormatada}">—</dd>
+          <dt>Quantidade</dt><dd th:text="${ingresso.quantidade}">—</dd>
+          <dt>Comprado em</dt><dd th:text="${ingresso.dataCompraFormatada}">—</dd>
+        </dl>
+      </div>
+
+      <!-- INGRESSO CANCELADO -->
+      <div th:if="${submitted == true and tipo == 'ingresso_cancelado'}" class="resultado resultado--erro">
+        <svg class="resultado__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        <h3>Ingresso cancelado</h3>
+        <p>Este ingresso foi cancelado e não é mais válido.</p>
+        <dl th:if="${ingresso != null}">
+          <dt>Código do Ingresso</dt><dd><code th:text="${ingresso.codigoIngresso}">—</code></dd>
+          <dt>Evento</dt><dd th:text="${ingresso.eventoTitulo}">—</dd>
+          <dt>Código do Evento</dt><dd><code th:text="${ingresso.eventoCodigoVerificacao}">—</code></dd>
+          <dt>Comprado em</dt><dd th:text="${ingresso.dataCompraFormatada}">—</dd>
+          <dt>Cancelado em</dt>
+          <dd th:text="${ingresso.dataCancelamentoFormatada != null ? ingresso.dataCancelamentoFormatada : 'Data não registrada'}">—</dd>
+        </dl>
+      </div>
+
+      <!-- NÃO ENCONTRADO -->
+      <div th:if="${submitted == true and tipo == 'nao_encontrado'}" class="resultado resultado--erro">
         <svg class="resultado__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"/>
           <line x1="15" y1="9" x2="9" y2="15"/>
           <line x1="9" y1="9" x2="15" y2="15"/>
         </svg>
         <h3>Código não encontrado</h3>
-        <p>Nenhum evento corresponde ao código informado. Confira se digitou corretamente ou entre em contato com a organização.</p>
+        <p>Nenhum evento ou ingresso corresponde ao código informado. Confira se digitou corretamente.</p>
         <p th:if="${codigoInformado != null and !codigoInformado.isEmpty()}">
           <small>Código informado: <code th:text="${codigoInformado}"></code></small>
         </p>
+      </div>
+
+      <!-- VAZIO -->
+      <div th:if="${submitted == true and tipo == 'vazio'}" class="resultado resultado--erro">
+        <h3>Código não informado</h3>
+        <p>Digite um código de evento ou de ingresso para verificar.</p>
       </div>
     </section>
   </div>

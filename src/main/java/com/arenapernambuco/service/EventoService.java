@@ -109,7 +109,7 @@ public class EventoService {
                 id,
                 form.getTitulo(),
                 dataHora,
-                form.getCategoria(),
+                normalizarCategoria(form.getCategoria()),
                 codigo,
                 nvl(form.getDescricaoCurta()),
                 nvl(form.getDescricaoCompleta()),
@@ -133,7 +133,7 @@ public class EventoService {
                 id,
                 form.getTitulo(),
                 dataHora,
-                form.getCategoria(),
+                normalizarCategoria(form.getCategoria()),
                 codigo,
                 nvl(form.getDescricaoCurta()),
                 nvl(form.getDescricaoCompleta()),
@@ -150,6 +150,30 @@ public class EventoService {
         repository.buscarPorId(id)
                 .orElseThrow(() -> new EventoNaoEncontradoException(id));
         repository.remover(id);
+    }
+
+    public void incrementarInscritos(String eventoId, int quantidade) {
+        validarId(eventoId);
+        Evento evento = repository.buscarPorId(eventoId)
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
+        Evento atualizado = new Evento(
+                evento.id(), evento.titulo(), evento.dataHora(), evento.categoria(),
+                evento.codigoVerificacao(), evento.descricaoCurta(), evento.descricaoCompleta(),
+                evento.imagemUrl(), evento.ativo(), evento.capacidade(),
+                evento.inscritos() + quantidade);
+        repository.atualizar(eventoId, atualizado);
+    }
+
+    public void decrementarInscritos(String eventoId, int quantidade) {
+        validarId(eventoId);
+        Evento evento = repository.buscarPorId(eventoId)
+                .orElseThrow(() -> new EventoNaoEncontradoException(eventoId));
+        int novoInscritos = Math.max(0, evento.inscritos() - quantidade);
+        Evento atualizado = new Evento(
+                evento.id(), evento.titulo(), evento.dataHora(), evento.categoria(),
+                evento.codigoVerificacao(), evento.descricaoCurta(), evento.descricaoCompleta(),
+                evento.imagemUrl(), evento.ativo(), evento.capacidade(), novoInscritos);
+        repository.atualizar(eventoId, atualizado);
     }
 
     public EventoFormDTO toFormDTO(String id) {
@@ -169,6 +193,14 @@ public class EventoService {
         form.setCapacidade(e.capacidade());
         form.setInscritos(e.inscritos());
         return form;
+    }
+
+    private String normalizarCategoria(String categoria) {
+        if (categoria == null) return "";
+        return CATEGORIAS_VALIDAS.stream()
+                .filter(c -> c.equalsIgnoreCase(categoria))
+                .findFirst()
+                .orElse(categoria);
     }
 
     private String resolverCodigo(String codigoInformado, String id) {
@@ -209,7 +241,8 @@ public class EventoService {
                 CORES_CATEGORIA.getOrDefault(e.categoria().toLowerCase(), "#6b7280"),
                 e.ativo(),
                 e.capacidade(),
-                e.inscritos()
+                e.inscritos(),
+                e.codigoVerificacao()
         );
     }
 }

@@ -1767,3 +1767,150 @@ select {
   border-radius: var(--radius-md);
   padding: 1.5rem;
 }
+
+/* === FLASH MESSAGES === */
+.flash-msg {
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.flash-msg--sucesso {
+  background-color: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--success);
+}
+
+.flash-msg--erro {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+}
+
+/* === INGRESSO CARDS === */
+.ingressos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.ingresso-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: var(--transition-base);
+}
+
+.ingresso-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.ingresso-card--cancelado {
+  opacity: 0.55;
+}
+
+.ingresso-card__img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.ingresso-card__img--placeholder {
+  width: 100%;
+  height: 140px;
+  background: var(--bg-card-hover);
+}
+
+.ingresso-card__body {
+  padding: 1.25rem;
+}
+
+.ingresso-card__titulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.ingresso-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.ingresso-card__codigo {
+  font-family: monospace;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  background: rgba(255, 107, 53, 0.08);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.75rem;
+}
+
+.ingresso-card__info {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.ingresso-card__status {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ingresso-card__status--ativo {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success);
+}
+
+.ingresso-card__status--cancelado {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+}
+
+.ingresso-card__actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* === COMPRA FORM (evento-detalhe) === */
+.compra-form {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.compra-form__qty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.compra-form__qty label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.compra-form__qty input[type="number"] {
+  width: 80px;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 1rem;
+}

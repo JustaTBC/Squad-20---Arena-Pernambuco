@@ -42,13 +42,13 @@ class VerificacaoControllerTest {
 
     @Test
     @WithMockUser(roles = "PARTICIPANTE")
-    void verificar_codigoValido_retornaOk() throws Exception {
+    void verificar_codigoValido_retornaEventoAtivo() throws Exception {
         mockMvc.perform(post("/verificar")
                         .param("codigo", "AP-FUT-001")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("submitted", true))
-                .andExpect(model().attribute("ok", true))
+                .andExpect(model().attribute("tipo", "evento_ativo"))
                 .andExpect(model().attributeExists("evento"));
     }
 
@@ -60,8 +60,7 @@ class VerificacaoControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("submitted", true))
-                .andExpect(model().attribute("ok", false))
-                .andExpect(model().attribute("inativo", true))
+                .andExpect(model().attribute("tipo", "evento_inativo"))
                 .andExpect(model().attributeExists("evento"))
                 .andExpect(content().string(containsString("Evento inativo")))
                 .andExpect(content().string(containsString("Busque contato com o suporte")));
@@ -69,24 +68,24 @@ class VerificacaoControllerTest {
 
     @Test
     @WithMockUser(roles = "PARTICIPANTE")
-    void verificar_codigoInexistente_retornaFalse() throws Exception {
+    void verificar_codigoInexistente_retornaNaoEncontrado() throws Exception {
         mockMvc.perform(post("/verificar")
                         .param("codigo", "XXXX")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("submitted", true))
-                .andExpect(model().attribute("ok", false));
+                .andExpect(model().attribute("tipo", "nao_encontrado"));
     }
 
     @Test
     @WithMockUser(roles = "PARTICIPANTE")
-    void verificar_codigoVazio_retornaFalse() throws Exception {
+    void verificar_codigoVazio_retornaTipoVazio() throws Exception {
         mockMvc.perform(post("/verificar")
                         .param("codigo", "")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("submitted", true))
-                .andExpect(model().attribute("ok", false));
+                .andExpect(model().attribute("tipo", "vazio"));
     }
 
     @Test
@@ -97,7 +96,7 @@ class VerificacaoControllerTest {
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("submitted", true))
-                .andExpect(model().attribute("ok", false));
+                .andExpect(model().attribute("tipo", "vazio"));
     }
 
     @Test

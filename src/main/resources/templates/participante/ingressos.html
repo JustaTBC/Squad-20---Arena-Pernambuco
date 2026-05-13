@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Meus Ingressos — Arena Pernambuco</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments :: header}"></div>
+
+<main>
+  <section class="section-header" style="padding: 2rem 0 1rem;">
+    <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1;">
+      Meus <span class="text-accent">Ingressos</span>
+    </h1>
+    <p class="text-muted" style="margin-top: 0.5rem;">
+      Ingressos comprados por <span sec:authentication="name"></span>
+    </p>
+  </section>
+
+  <div th:if="${sucesso}" class="flash-msg flash-msg--sucesso" th:text="${sucesso}"></div>
+  <div th:if="${erro}" class="flash-msg flash-msg--erro" th:text="${erro}"></div>
+
+  <div th:if="${ingressos.empty}">
+    <p class="text-muted" style="margin-top: 2rem;">
+      Você ainda não comprou nenhum ingresso.
+      <a th:href="@{/eventos}" class="text-accent">Ver eventos disponíveis</a>
+    </p>
+  </div>
+
+  <div th:if="${!ingressos.empty}" class="ingressos-grid">
+    <div th:each="ing : ${ingressos}"
+         th:class="'ingresso-card' + (${ing.cancelado} ? ' ingresso-card--cancelado' : '')">
+
+      <img th:if="${not #strings.isEmpty(ing.eventoImagemUrl)}"
+           class="ingresso-card__img"
+           th:src="${ing.eventoImagemUrl}"
+           th:alt="${ing.eventoTitulo}"
+           loading="lazy"/>
+      <div th:unless="${not #strings.isEmpty(ing.eventoImagemUrl)}"
+           class="ingresso-card__img--placeholder"></div>
+
+      <div class="ingresso-card__body">
+        <p class="ingresso-card__titulo" th:text="${ing.eventoTitulo}">Título</p>
+
+        <div class="ingresso-card__meta">
+          <span class="badge"
+                th:text="${ing.eventoCategoria}"
+                th:style="'background-color:' + ${ing.badgeCor} + '1a; color:' + ${ing.badgeCor}">
+            Categoria
+          </span>
+          <span class="text-muted" th:text="${ing.eventoDataFormatada}">Data</span>
+        </div>
+
+        <div class="ingresso-card__codigo" th:text="${ing.codigoIngresso}">XXXXXXXX</div>
+
+        <p class="ingresso-card__info" th:if="${not #strings.isEmpty(ing.eventoCodigoVerificacao)}">
+          Cód. evento: <code th:text="${ing.eventoCodigoVerificacao}">—</code>
+        </p>
+
+        <p class="ingresso-card__info">
+          <strong th:text="${ing.quantidade}">1</strong>
+          ingresso(s) &bull; Comprado em <span th:text="${ing.dataCompraFormatada}">01/01/2026</span>
+        </p>
+
+        <span th:if="${!ing.cancelado}"
+              class="ingresso-card__status ingresso-card__status--ativo">Ativo</span>
+        <span th:if="${ing.cancelado}"
+              class="ingresso-card__status ingresso-card__status--cancelado">Cancelado</span>
+
+        <p th:if="${ing.cancelado and ing.dataCancelamentoFormatada != null}"
+           class="ingresso-card__info" style="margin-top: 0.5rem;">
+          Cancelado em: <span th:text="${ing.dataCancelamentoFormatada}">—</span>
+        </p>
+
+        <div th:if="${!ing.cancelado}" class="ingresso-card__actions">
+          <form th:action="@{/ingressos/{id}/cancelar(id=${ing.id})}" method="post">
+            <button type="submit" class="btn btn--ghost btn--sm"
+                    onclick="return confirm('Confirma o cancelamento do ingresso?')">
+              Cancelar Ingresso
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div th:replace="~{fragments :: footer}"></div>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

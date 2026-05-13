@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
@@ -11,8 +11,9 @@
     <nav class="nav">
       <a th:href="@{/}">Início</a>
       <a th:href="@{/eventos}">Eventos</a>
-      <a th:href="@{/sugestoes}">Sugerir Evento</a>
+      <a th:href="@{/sugestoes}" sec:authorize="!hasRole('ADMIN')">Sugerir Evento</a>
       <a th:href="@{/verificar}" sec:authorize="hasAnyRole('PARTICIPANTE','ADMIN')">Verificar</a>
+      <a th:href="@{/participante/ingressos}" sec:authorize="hasRole('PARTICIPANTE')">Meus Ingressos</a>
       <a th:href="@{/admin/eventos}" sec:authorize="hasRole('ADMIN')">Admin</a>
       <a th:href="@{/admin/dashboard}" sec:authorize="hasRole('ADMIN')">Dashboard</a>
       <a th:href="@{/admin/sugestoes}" sec:authorize="hasRole('ADMIN')">Sugestões</a>

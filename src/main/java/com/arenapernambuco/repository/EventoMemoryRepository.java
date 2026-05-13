@@ -88,14 +88,18 @@ public class EventoMemoryRepository implements EventoRepository {
 
     @Override
     public List<Evento> buscarTodos() {
-        return Collections.unmodifiableList(eventos);
+        synchronized (eventos) {
+            return Collections.unmodifiableList(new ArrayList<>(eventos));
+        }
     }
 
     @Override
     public List<Evento> buscarAtivos() {
-        return eventos.stream()
-                .filter(Evento::ativo)
-                .collect(Collectors.toList());
+        synchronized (eventos) {
+            return eventos.stream()
+                    .filter(Evento::ativo)
+                    .collect(Collectors.toList());
+        }
     }
 
     @Override

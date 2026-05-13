@@ -29,6 +29,15 @@
       <p class="kpi-card__label">Categoria Mais Popular</p>
       <p class="kpi-card__value" th:text="${dash.categoriaMaisPopular}">N/A</p>
     </div>
+    <div class="kpi-card">
+      <p class="kpi-card__label">Total de Inscritos</p>
+      <p class="kpi-card__value" th:text="${#numbers.formatInteger(dash.totalInscritos, 1, 'POINT')}">0</p>
+    </div>
+    <div class="kpi-card">
+      <p class="kpi-card__label">Ocupação Média Geral</p>
+      <p class="kpi-card__value"
+         th:text="${#numbers.formatDecimal(dash.ocupacaoMediaGeral, 1, 1) + '%'}">0%</p>
+    </div>
   </div>
 
   <!-- Tabela de estatísticas por categoria -->
@@ -52,6 +61,41 @@
             <td th:text="${#numbers.formatDecimal(stat.mediaOcupacao, 1, 1)}">0.0</td>
             <td th:text="${#numbers.formatDecimal(stat.medianaOcupacao, 1, 1)}">0.0</td>
             <td th:text="${#numbers.formatDecimal(stat.desvioPadrao, 1, 1)}">0.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Top 5 eventos por ocupação -->
+  <section class="dashboard-section">
+    <h2 class="dashboard-section__title">Top 5 Eventos por Ocupação</h2>
+    <div class="admin-table-wrap">
+      <table class="admin-table dashboard-stats-table">
+        <thead>
+          <tr>
+            <th>Evento</th>
+            <th>Categoria</th>
+            <th>Inscritos</th>
+            <th>Capacidade</th>
+            <th>Ocupação (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="ev : ${dash.topEventosPorOcupacao}">
+            <td th:text="${ev.titulo}">Título</td>
+            <td><span class="badge badge--accent" th:text="${ev.categoria}">Cat</span></td>
+            <td th:text="${#numbers.formatInteger(ev.inscritos, 1, 'POINT')}">0</td>
+            <td th:text="${#numbers.formatInteger(ev.capacidade, 1, 'POINT')}">0</td>
+            <td>
+              <div style="display:flex; align-items:center; gap:0.5rem;">
+                <div style="flex:1; background:rgba(255,255,255,0.08); border-radius:4px; height:8px; overflow:hidden;">
+                  <div th:style="'width:' + ${#numbers.formatDecimal(ev.ocupacaoPct,1,1)} + '%; background:#FF6B35; height:100%;'"></div>
+                </div>
+                <span style="min-width:3.5rem; text-align:right;"
+                      th:text="${#numbers.formatDecimal(ev.ocupacaoPct, 1, 1) + '%'}">0%</span>
+              </div>
+            </td>
           </tr>
         </tbody>
       </table>

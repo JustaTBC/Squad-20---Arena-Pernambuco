@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -83,8 +84,30 @@
     <h2>Sobre o evento</h2>
     <p th:text="${evento.descricaoCompleta}">Descrição completa do evento.</p>
 
+    <div th:if="${sucesso}" class="flash-msg flash-msg--sucesso" th:text="${sucesso}"></div>
+    <div th:if="${erro}" class="flash-msg flash-msg--erro" th:text="${erro}"></div>
+
     <div class="detalhe-actions">
-      <a th:href="@{/verificar}" class="btn btn--primary">Verificar ingresso</a>
+      <!-- Participante/Admin: form de compra -->
+      <div sec:authorize="hasAnyRole('PARTICIPANTE','ADMIN')" class="compra-form">
+        <form th:action="@{/ingressos/comprar}" method="post">
+          <input type="hidden" name="eventoId" th:value="${evento.id}"/>
+          <div class="compra-form__qty">
+            <label for="quantidade">Ingressos</label>
+            <input type="number" id="quantidade" name="quantidade"
+                   value="1" min="1" max="5"/>
+          </div>
+          <button type="submit" class="btn btn--primary">Comprar Ingresso</button>
+        </form>
+      </div>
+
+      <!-- Visitante: link para login -->
+      <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn btn--primary">
+        Entrar para comprar
+      </a>
+
+      <a th:href="@{/verificar}" sec:authorize="hasAnyRole('PARTICIPANTE','ADMIN')"
+         class="btn btn--ghost">Verificar ingresso</a>
       <a th:href="@{/eventos}" class="btn btn--ghost">Voltar aos eventos</a>
     </div>
   </section>

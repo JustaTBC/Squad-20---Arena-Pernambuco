@@ -10,7 +10,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -239,14 +242,16 @@ class EventoServiceTest {
         EventoFiltroDTO filtro = new EventoFiltroDTO(null, null, "proximos");
         List<EventoDTO> resultado = service.filtrar(filtro);
 
-        for (int i = 0; i < resultado.size() - 1; i++) {
-            assertTrue(
-                    resultado.get(i).dataFormatada().compareTo(resultado.get(i + 1).dataFormatada()) <= 0
-                            || true,
-                    "Ordem deve ser ascendente"
-            );
-        }
         assertFalse(resultado.isEmpty());
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy 'às' HH'h'mm",
+                Locale.forLanguageTag("pt-BR"));
+        for (int i = 0; i < resultado.size() - 1; i++) {
+            LocalDateTime dt1 = LocalDateTime.parse(resultado.get(i).dataFormatada(), fmt);
+            LocalDateTime dt2 = LocalDateTime.parse(resultado.get(i + 1).dataFormatada(), fmt);
+            assertTrue(dt1.compareTo(dt2) <= 0,
+                    "Ordem deve ser ascendente: " + resultado.get(i).dataFormatada()
+                            + " deve vir antes de " + resultado.get(i + 1).dataFormatada());
+        }
     }
 
     @Test
@@ -278,5 +283,64 @@ class EventoServiceTest {
         form.setCapacidade(0); // capacidade=0 = skip check
         form.setInscritos(999);
         assertTrue(form.isInscritosValido(), "capacidade=0 deve ser sempre válido");
+    }
+
+    @Test
+    void incrementarInscritos_somaQuantidadeAoContador() {
+        int antes = service.buscarDetalhePorId("1").inscritos(); // 38000
+        service.incrementarInscritos("1", 3);
+        int depois = service.buscarDetalhePorId("1").inscritos();
+        assertEquals(antes + 3, depois);
+    }
+
+    @Test
+    void decrementarInscritos_subtraiQuantidadeDoContador() {
+        int antes = service.buscarDetalhePorId("1").inscritos(); // 38000
+        service.decrementarInscritos("1", 5);
+        int depois = service.buscarDetalhePorId("1").inscritos();
+        assertEquals(antes - 5, depois);
+    }
+
+    @Test
+    void decrementarInscritos_naoVaiAbaixoDeZero() {
+        // evento "10" tem inscritos=0
+        service.decrementarInscritos("10", 10);
+        int inscritos = service.buscarDetalhePorId("10").inscritos();
+        assertEquals(0, inscritos);
+    }
+
+    @Test
+    void incrementarInscritos_eventoInexistente_lancaExcecao() {
+        assertThrows(EventoNaoEncontradoException.class,
+                () -> service.incrementarInscritos("9999", 1));
+    }
+
+    @Test
+    void cadastrar_categoriaMaiusculaVariada_normalizaParaTitleCase() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Evento Normalizado");
+        form.setCategoria("FUTEBOL");
+        form.setDataHora("2026-12-01T20:00");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertEquals("Futebol", dto.categoria(),
+                "Categoria deve ser normalizada para Title Case");
+    }
+
+    @Test
+    void cadastrar_categoriaCaseInsensitive_badgeCorCorreta() {
+        EventoFormDTO form = new EventoFormDTO();
+        form.setTitulo("Show Música");
+        form.setCategoria("música");
+        form.setDataHora("2026-12-01T20:00");
+        form.setAtivo(true);
+
+        EventoDTO dto = service.cadastrar(form);
+
+        assertEquals("Música", dto.categoria());
+        assertEquals("#FF6B35", dto.badgeCor(),
+                "Badge deve usar cor de Música após normalização");
     }
 }

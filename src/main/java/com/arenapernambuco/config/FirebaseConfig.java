@@ -58,4 +58,9 @@ public class FirebaseConfig {
     public DatabaseReference sugestoesRef(FirebaseApp firebaseApp) {
         return FirebaseDatabase.getInstance(firebaseApp).getReference("sugestoes");
     }
+
+    @Bean
+    public DatabaseReference ingressosRef(FirebaseApp firebaseApp) {
+        return FirebaseDatabase.getInstance(firebaseApp).getReference("ingressos");
+    }
 }

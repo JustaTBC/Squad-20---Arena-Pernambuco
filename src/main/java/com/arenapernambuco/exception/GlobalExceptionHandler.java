@@ -21,10 +21,10 @@ public class GlobalExceptionHandler {
         return "erro-404";
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleGeneral(Exception ex, Model model) {
-        log.error("Erro interno", ex);
+    public String handleGeneral(RuntimeException ex, Model model) {
+        log.error("Erro interno [{}]: {}", ex.getClass().getSimpleName(), ex.getMessage());
         model.addAttribute("mensagem", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
         return "erro-500";
     }

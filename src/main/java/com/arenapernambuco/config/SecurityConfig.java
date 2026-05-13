@@ -25,11 +25,13 @@ public class SecurityConfig {
                 .requestMatchers("/login", "/erro-403").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/verificar/**").hasAnyRole("PARTICIPANTE", "ADMIN")
+                .requestMatchers("/participante/**").hasAnyRole("PARTICIPANTE", "ADMIN")
+                .requestMatchers("/ingressos/**").hasAnyRole("PARTICIPANTE", "ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/eventos", true)
+                .defaultSuccessUrl("/eventos", false)
                 .permitAll()
             )
             .logout(logout -> logout
