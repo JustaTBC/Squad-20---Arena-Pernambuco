@@ -12,8 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @Profile("firebase")
@@ -33,11 +35,7 @@ public class FirebaseConfig {
             return FirebaseApp.getInstance();
         }
 
-        InputStream credentials = getClass().getResourceAsStream(credentialsPath);
-        if (credentials == null) {
-            throw new IllegalStateException(
-                "Arquivo de credenciais Firebase não encontrado: " + credentialsPath);
-        }
+        InputStream credentials = resolveCredentials();
 
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(credentials))
@@ -47,6 +45,22 @@ public class FirebaseConfig {
         FirebaseApp app = FirebaseApp.initializeApp(options);
         log.info("Firebase inicializado com sucesso: {}", databaseUrl);
         return app;
+    }
+
+    private InputStream resolveCredentials() {
+        String json = System.getenv("FIREBASE_CREDENTIALS_JSON");
+        if (json != null && !json.isBlank()) {
+            log.info("Credenciais Firebase carregadas da variável de ambiente.");
+            return new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+        }
+
+        InputStream stream = getClass().getResourceAsStream(credentialsPath);
+        if (stream == null) {
+            throw new IllegalStateException(
+                "Credenciais Firebase não encontradas. Defina FIREBASE_CREDENTIALS_JSON ou coloque o arquivo em: " + credentialsPath);
+        }
+        log.info("Credenciais Firebase carregadas do classpath: {}", credentialsPath);
+        return stream;
     }
 
     @Bean
