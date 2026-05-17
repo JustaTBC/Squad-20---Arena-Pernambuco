@@ -119,4 +119,10 @@ https://youtu.be/crsFQruD89s
 <img width="1187" height="763" alt="issue 1" src="https://github.com/user-attachments/assets/b6d79743-ce6d-41e1-8ecc-3a53a2532341" />
 <img width="1169" height="293" alt="issue 2" src="https://github.com/user-attachments/assets/faef96fa-ea69-41b5-86f6-b17982fa6380" />
 
+---
+## 🎥 Demonstração do projeto
+
+▶️ **Assistir no YouTube**
+
+https://youtu.be/brX-TCY0pDs
 
