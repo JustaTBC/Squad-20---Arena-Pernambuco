@@ -4,6 +4,12 @@ Este projeto tem como objetivo propor um sistema para **gestão e divulgação d
 
 ---
 
+## Como executar o projeto
+
+Consulte o [**Guia de Configuracao do Ambiente**](SETUP.md) para instruções completas de instalação, configuração do Firebase e execução local.
+
+---
+
 # 📦 Entrega 1
 
 Nesta primeira entrega foram desenvolvidos os seguintes artefatos do projeto:
