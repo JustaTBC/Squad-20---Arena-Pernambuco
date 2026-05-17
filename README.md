@@ -91,3 +91,26 @@ https://youtu.be/Y7xjBytQVKM
 
 <img width="1333" height="240" alt="bug tracker closed" src="https://github.com/user-attachments/assets/9864ba1e-4858-4980-860c-691b26761478" />
 <img width="1268" height="236" alt="bug tracker atualização" src="https://github.com/user-attachments/assets/e40c79a1-16ea-4233-971c-67f963538a5b" />
+
+---
+
+# 📦 Entrega 4
+
+---
+
+## 🎥 Screencast da aplicação
+
+Vídeo demonstrando a navegação pelo site e explicando as histórias implementadas.
+
+▶️ **Assistir no YouTube**
+
+https://youtu.be/crsFQruD89s
+
+---
+
+🎥 **Issue Bug Tracker**
+
+<img width="1187" height="763" alt="issue 1" src="https://github.com/user-attachments/assets/b6d79743-ce6d-41e1-8ecc-3a53a2532341" />
+<img width="1169" height="293" alt="issue 2" src="https://github.com/user-attachments/assets/faef96fa-ea69-41b5-86f6-b17982fa6380" />
+
+
